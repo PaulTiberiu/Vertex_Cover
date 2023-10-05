@@ -2,6 +2,7 @@ import copy
 import numpy as np 
 
 # V = ca doit etre un tableau?
+#test push
 
 class Graph:
     V = set # Ensemble de sommets (la liste de sommets) 
