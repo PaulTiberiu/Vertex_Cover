@@ -9,6 +9,10 @@ class Graph:
 
 
     def __init__(self, V, E=None):
+        """
+        Permet de creer le graphe avec les valeurs V et E pasees en parametre
+        """
+        
         self.V = V
 
         if(E == None):
@@ -20,7 +24,7 @@ class Graph:
         """
         Permet d'ajouter une arrete
         """
-        
+
         self.E[v1].add(v2)          # On ajoute v1 a v2 et
         self.E[v2].add(v1)          # v2 a v1 car le graphe est non oriente
 
@@ -75,7 +79,7 @@ class Graph:
         return T
     """
 
-    def degree_number(self) :        
+    def vertex_degrees(self) :        
         """
         Renvoie un nouveau dictionnaire qui associe chaque sommet (clé) à son degré (valeur)
         """
@@ -89,10 +93,10 @@ class Graph:
 
     def max_degree(self) :           
         """
-        Cherche le degré maximum dans le dictionnaire de { sommet : degré }
+        Cherche le degré maximum dans le dictionnaire { sommet : degré }
         """
 
-        dico_deg = self.nombre_degre()
+        dico_deg = self.vertex_degrees()
         candMax = -1
 
         for e in dico_deg :
