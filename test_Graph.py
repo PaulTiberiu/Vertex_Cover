@@ -1,25 +1,29 @@
-import Graph as gr
+import Graph
 
-sommet = {0, 3, 6, 8, 10, 14}
-arrete = {0 : {6, 3, 8}, 3 : {0,6}, 6 : {8, 0, 14, 10, 6}, 8 : {6}}
-graph = gr.Graph(sommet, arrete)
-# graph.add_edge(0, 3)
-# graph.add_edge(0, 6)
-# graph.add_edge(6, 8)
-# graph.add_edge(6, 3)
-print("Graphe original:")
-print(graph.V)
-print("___________________")
-print(graph.E)
-print("___________________")
+vertices = [0, 3, 6, 8]
+adjacents = {0 : {6, 3}, 3 : {0}, 6 : {8, 0}, 8 : {6}}
+graph = Graph.Graph(vertices, adjacents)
+print("Graphe: ")
+print("Sommets:", graph.V)
+print("Aretes:", graph.E)
 
-dico = graph.nombre_degre()
-print(f'dico : {dico}')
-print("___________________")
-print(f'Le degré max est : {graph.max_degre()}' )
+graph_v2 = Graph.Graph.remove_vertex(graph, 3)
+
+print("Graphe_v2: ")
+print("Sommets:", graph_v2.V)
+print("Aretes:", graph_v2.E)
 
 
-# v_to_remove = {3, 0, 4, 5, 9}
-# graph.remove_many_vertex(v_to_remove)
-# print("\nGraphe aprÃ¨s suppression du sommet", v_to_remove, ":"
-#print(graph)
+vertex_remove = {3,6}
+graph_v3 = Graph.Graph.remove_many_vertex(graph, vertex_remove)
+
+print("Graphe_v3: ")
+print("Sommets:", graph_v3.V)
+print("Aretes:", graph_v3.E)
+
+
+dico = graph.vertex_degrees()
+print("Degrees des sommets: ", dico)
+
+
+print("Degree max d'un sommet du Graph: ", Graph.Graph.max_degree(graph))
