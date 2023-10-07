@@ -26,7 +26,7 @@ print("Degrees des sommets: ", dico)
 print("Degree max d'un sommet du Graph: ", Graph.Graph.max_degree(graph))
 
 n = 4
-p = 0.5
+p = 0.1
 
-graph_v4 = Graph.random_graph(n, p) # fonctionne pas
-print("Graphe avec 4 sommets, avec des aretes cree avec une probabilite 0.5", graph_v4)
+graph_v4 = Graph.Graph.random_graph(n, p)
+print("Graphe avec 4 sommets, avec des aretes cree avec une probabilite 0.5: ","sommets: ", graph_v4.V, "aretes: ", graph_v4.E)
