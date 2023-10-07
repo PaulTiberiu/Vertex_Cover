@@ -29,8 +29,9 @@ n = 4
 p = 0.1
 
 graph_v4 = Graph.Graph.random_graph(n, p)
-print("Graphe avec n sommets, avec des aretes cree avec une probabilite p: ","sommets: ", graph_v4.V, "aretes: ", graph_v4.E)
+print("Graphe avec n sommets, avec des aretes crees avec une probabilite p: ","sommets: ", graph_v4.V, "aretes: ", graph_v4.E)
 
 couverture = graph.algo_couplage()
 print("La couverture obtenue a partir de graph est: ", couverture)
 
+print(f'La liste après l algo glouton est : {graph.algo_glouton()}')
