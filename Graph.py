@@ -132,3 +132,27 @@ class Graph:
                     graph.insert_edge(i, j)
 
         return graph
+
+    def algo_couplage(self):
+        """
+        Couplage = ensemble d'aretes n'ayant pas d'exremite en commun
+        """
+
+        C = set()
+        covered = set()
+
+        # Parcourir toutes les arêtes dans le graphe
+        for vertex in self.V:
+            # Si le sommet n'est pas déjà couvert
+            if vertex not in covered:
+                for neighbour in self.E[vertex]:
+                    # Si le voisin n'est pas déjà couvert
+                    if neighbour not in covered:
+                        # Ajouter le sommet et son voisin à C
+                        C.add(vertex)
+                        C.add(neighbour)
+                        # Marquer les deux sommets comme couverts
+                        covered.add(vertex)
+                        covered.add(neighbour)
+
+        return C
