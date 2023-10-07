@@ -1,5 +1,6 @@
 import copy
-import numpy as np 
+import numpy as np
+import random
 
 # V = ca doit etre un tableau?
 
@@ -104,3 +105,29 @@ class Graph:
                 candMax = dico_deg[e]
 
         return candMax
+
+    def random_graph(self, n, p): #fonctionne pas
+        """
+        Cree un graphe de n sommets ou chaque arete (i,j) est presente avec la probabilite p
+        """
+
+        if(n <= 0):
+            raise ValueError("Le parametre n doit etre superieur a 0")
+
+        if(p <=0 or p >= 1):
+            raise ValueError("Le parametre p doit etre entre 0 et 1")
+
+        adjacents = {}
+        vertices = set()
+
+        for i in range (n): # Ajouter n sommets
+            vertices.add(i)
+
+        graph = Graph(vertices, adjacents) # Creer le graphe graphe avec n sommets
+        
+        for i in range (n):
+            for j in range (i+1, n):
+                if (random.random() < p): # Ajoute une arete avec la probabilite p
+                    insert_edge(graph, i, j)
+
+        return graph
