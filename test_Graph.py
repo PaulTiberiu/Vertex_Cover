@@ -13,7 +13,6 @@ print("Graphe_v2: ")
 print("Sommets:", graph_v2.V)
 print("Aretes:", graph_v2.E)
 
-
 vertex_remove = {3,6}
 graph_v3 = Graph.Graph.remove_many_vertex(graph, vertex_remove)
 
@@ -21,9 +20,13 @@ print("Graphe_v3: ")
 print("Sommets:", graph_v3.V)
 print("Aretes:", graph_v3.E)
 
-
 dico = graph.vertex_degrees()
 print("Degrees des sommets: ", dico)
 
-
 print("Degree max d'un sommet du Graph: ", Graph.Graph.max_degree(graph))
+
+n = 4
+p = 0.5
+
+graph_v4 = Graph.random_graph(n, p) # fonctionne pas
+print("Graphe avec 4 sommets, avec des aretes cree avec une probabilite 0.5", graph_v4)
