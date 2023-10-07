@@ -94,17 +94,19 @@ class Graph:
 
     def max_degree(self) :           
         """
-        Cherche le degré maximum dans le dictionnaire { sommet : degré }
+        Cherche le degré maximum dans le dictionnaire { sommet : degré } et renvoie la cle
         """
 
         dico_deg = self.vertex_degrees()
         candMax = -1
+        s = -1
 
         for e in dico_deg :
             if dico_deg[e] > candMax :
                 candMax = dico_deg[e]
+                s = e
 
-        return candMax
+        return s 
 
     def random_graph(n, p):
         """
@@ -155,4 +157,19 @@ class Graph:
                         covered.add(vertex)
                         covered.add(neighbour)
 
+        return C
+
+    def algo_glouton(self) :
+        """
+        Renvoie une liste des sommets classés par degré décroissant sachant que lorsqu'on a saisi un sommet, 
+        on compare les derniers sommets entre eux, sans les aretes liés au sommet saisi
+        """
+
+        C = set() # Plutot liste? car dans la question c'est ecrit "emptyset" mais si c'est un ensemble ce n'est pas dans l'odre
+        graph_cpy = copy.deepcopy(self) 
+
+        while (graph_cpy.E != {}) :
+            Smax = graph_cpy.max_degree()   # Recupere le sommet avec le degre max du dictionnaire
+            C.add(Smax)                  # Ajoute le sommet Smax a la liste C                    
+            graph_cpy = graph_cpy.remove_vertex(Smax)   # Supprime Smax du dictionnaire
         return C
