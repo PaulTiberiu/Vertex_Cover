@@ -106,28 +106,29 @@ class Graph:
 
         return candMax
 
-    def random_graph(self, n, p): #fonctionne pas
+    def random_graph(n, p):
         """
         Cree un graphe de n sommets ou chaque arete (i,j) est presente avec la probabilite p
         """
 
-        if(n <= 0):
+
+        if n <= 0:
             raise ValueError("Le parametre n doit etre superieur a 0")
 
-        if(p <=0 or p >= 1):
+        if p <= 0 or p >= 1:
             raise ValueError("Le parametre p doit etre entre 0 et 1")
 
-        adjacents = {}
+        adjacents = None 
         vertices = set()
 
-        for i in range (n): # Ajouter n sommets
+        for i in range(n):
             vertices.add(i)
-
-        graph = Graph(vertices, adjacents) # Creer le graphe graphe avec n sommets
-        
-        for i in range (n):
-            for j in range (i+1, n):
-                if (random.random() < p): # Ajoute une arete avec la probabilite p
-                    insert_edge(graph, i, j)
+            
+        graph = Graph(vertices, adjacents)
+    
+        for i in range(n):
+            for j in range(i + 1, n):
+                if random.random() < p:
+                    graph.insert_edge(i, j)
 
         return graph
