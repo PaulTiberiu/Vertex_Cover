@@ -23,10 +23,12 @@ print("Aretes:", graph_v3.E)
 dico = graph.vertex_degrees()
 print("Degrees des sommets: ", dico)
 
-print("Degree max d'un sommet du Graph: ", Graph.Graph.max_degree(graph))
+print("Sommet avec le degre max: ", Graph.Graph.max_degree(graph))
 
-n = 4
-p = 0.1
+n = 6
+p = 0.6
 
 graph_v4 = Graph.Graph.random_graph(n, p)
-print("Graphe avec 4 sommets, avec des aretes cree avec une probabilite 0.5: ","sommets: ", graph_v4.V, "aretes: ", graph_v4.E)
+print(f'Graphe avec {n} sommets et des aretes creees avec une probabilite {p}\n sommets : {graph_v4.V}\n aretes : {graph_v4.E}')
+
+print(f'La liste après l algo glouton est : {graph_v4.algo_glouton()}')

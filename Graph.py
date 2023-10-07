@@ -72,7 +72,7 @@ class Graph:
             
         return G_cpy
 
-    #Question 2.1.3
+#Question 2.1.3
 
     """
     def ens_to_tab(Ens):
@@ -94,17 +94,20 @@ class Graph:
 
     def max_degree(self) :           
         """
-        Cherche le degré maximum dans le dictionnaire { sommet : degré }
+        Retourne le sommet avec le degré maximum dans le dictionnaire { sommet : degré }
         """
 
         dico_deg = self.vertex_degrees()
         candMax = -1
+        s = -1
 
         for e in dico_deg :
             if dico_deg[e] > candMax :
                 candMax = dico_deg[e]
+                s = e
+        return s #je renvoie plutôt la clé du sommet car c'est ce qui est demandé dans l'énoncé
 
-        return candMax
+#Question 2.2
 
     def random_graph(n, p):
         """
@@ -132,3 +135,18 @@ class Graph:
                     graph.insert_edge(i, j)
 
         return graph
+
+#Question 3.2.2
+
+    def algo_glouton(self) :
+        """ Renvoie une liste des sommets classés par degré décroissant sachant que lorsqu'on a saisi un sommet, 
+        on compare les derniers sommets entre eux, sans les aretes liés au sommet saisi"""
+        C = [] #plutôt liste? car dans la question c écrit "emptyset" mais si c'est un ensemble ce n'est pas dans l'odre
+        graph_cpy = copy.deepcopy(self) 
+
+        while ( graph_cpy.E != {}) :
+            Smax = graph_cpy.max_degree()   #récupère le sommet avec le degre max du dictionnaire
+            C.append(Smax)                  #ajoute le sommet Smax à la liste C                    
+            graph_cpy = graph_cpy.remove_vertex(Smax)   #Supprime Smax du dictionnaire
+        return C
+     
