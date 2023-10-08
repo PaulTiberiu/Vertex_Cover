@@ -176,7 +176,7 @@ class Graph:
             graph_cpy = graph_cpy.remove_vertex(Smax)   # Supprime Smax du dictionnaire
         return C
 
-    def measure_Nmax(graph, algorithm):
+    def measure_time(graph, algorithm):
         
         start_time = time.time()
 
@@ -191,45 +191,69 @@ class Graph:
 
         return execution_time
 
-    # Pas encore teste, il faut d'abord determiner Nmax
-
-    def measure_execution_time_vertex(algorithm, sizes, num_instances_per_size, nb_vertex_values, p):
-
+    def measure_execution_time_vertex(algorithm, num_graphs_per_size, Nmax, p):
+        
         execution_times = []
+        sizes = [Nmax // 10 * i for i in range(1, 11)]
 
-        for nb_vertex in nb_vertex_values:
-            size_execution_times = []
+        for nmax in sizes:
+            total_execution_time = 0
 
-            for size in sizes:
+            for _ in range(num_graphs_per_size):
+                graph = Graph.random_graph(nmax, p)
+
+                start_time = time.time()
+                if algorithm == "glouton":
+                    solution = graph.algo_glouton()
+
+                elif algorithm == "couplage":
+                    solution = graph.algo_couplage()
+
+                end_time = time.time()
+                execution_time = end_time - start_time
+
+                total_execution_time += execution_time
+
+            average_execution_time = total_execution_time / num_graphs_per_size
+            execution_times.append(average_execution_time)
+
+        # Tracer la courbe du temps en fonction de la taille de l'instance
+        plt.plot(sizes, execution_times, marker='o')
+        plt.xlabel("Taille de l'instance (nombre de sommets)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
+        plt.show()
+
+
+        def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
+        
+            execution_times = []
+            sizes = [Nmax // 10 * i for i in range(1, 11)]
+
+            for nmax in sizes:
                 total_execution_time = 0
 
-                for _ in range(num_instances_per_size):
-                    graph = Graph.random_graph(nb_vertex, p)
+                for _ in range(num_graphs_per_size):
+                    graph = Graph.random_graph(nb_vertices, nmax)
 
                     start_time = time.time()
                     if algorithm == "glouton":
                         solution = graph.algo_glouton()
+
                     elif algorithm == "couplage":
                         solution = graph.algo_couplage()
+
                     end_time = time.time()
                     execution_time = end_time - start_time
 
                     total_execution_time += execution_time
 
-                average_execution_time = total_execution_time / num_instances_per_size
-                size_execution_times.append(average_execution_time)
+                average_execution_time = total_execution_time / num_graphs_per_size
+                execution_times.append(average_execution_time)
 
-            execution_times.append(size_execution_times)
-
-        # Tracer les courbes
-        for i, nb_vertex in enumerate(nb_vertex_values):
-            plt.plot(sizes, execution_times[i], marker='o', label=f"nb_vertex={nb_vertex}")
-
-        plt.xlabel("Taille de l'instance (nombre de sommets)")
-        plt.ylabel("Temps d'exécution moyen (secondes)")
-        plt.title("Temps d'exécution de l'algorithme glouton pour différentes tailles d'instances et nb_vertex")
-        plt.legend()
-        plt.show()
-        
-
-    
+            # Tracer la courbe du temps en fonction de la taille de l'instance
+            plt.plot(sizes, execution_times, marker='o')
+            plt.xlabel("Taille de l'instance (nombre de probabilites)")
+            plt.ylabel("Temps d'exécution moyen (secondes)")
+            plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
+            plt.show()
