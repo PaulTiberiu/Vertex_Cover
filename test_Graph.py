@@ -39,13 +39,20 @@ print(f'La liste après l algo glouton est : {graph.algo_glouton()}')
 # Mesure de Nmax
 #graph_v6 = Graph.Graph.random_graph(30000, 0.3) 
 # Mon terminal est killed lors de la creation d'un graphe comme ca, je vois pas pourquoi
-# Sinon couplage plus rapide
-# Je ne peux pas trouver la taille de nombres des sommets pour laquelle Nmax arrive a 5 pour couplage
-# car mon terminal est killed.
-graph_v5 = Graph.Graph.random_graph(350, 0.3) # Sinon couplage plus rapide
+# Sinon couplage plus rapide dans le cas de sommets
+# Je ne peux pas trouver Nmax(sommets) pour couplage car terminal killed quand je cree un graphe avec un grand nombre des sommets
 
-Nmax_couplage = Graph.Graph.measure_Nmax(graph_v5, "couplage")
-print("Nmax couplage: ", Nmax_couplage, " secondes")
+Nmax = 350
+graph_v5 = Graph.Graph.random_graph(Nmax, 0.3)
 
-Nmax_glouton = Graph.Graph.measure_Nmax(graph_v5, "glouton")
-print("Nmax glouton: ", Nmax_glouton, " secondes")
+temps_couplage = Graph.Graph.measure_time(graph_v5, "couplage")
+print("Temps couplage: ", temps_couplage, " secondes", " pour Nmax(sommets) = ", Nmax)
+
+temps_glouton = Graph.Graph.measure_time(graph_v5, "glouton")
+print("Temps glouton: ", temps_glouton, " secondes", " pour Nmax(sommets) = ", Nmax)
+
+
+
+
+
+
