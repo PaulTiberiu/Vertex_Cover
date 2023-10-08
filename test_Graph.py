@@ -35,3 +35,17 @@ couverture = graph.algo_couplage()
 print("La couverture obtenue a partir de graph est: ", couverture)
 
 print(f'La liste après l algo glouton est : {graph.algo_glouton()}')
+
+# Mesure de Nmax
+#graph_v6 = Graph.Graph.random_graph(30000, 0.3) 
+# Mon terminal est killed lors de la creation d'un graphe comme ca, je vois pas pourquoi
+# Sinon couplage plus rapide
+# Je ne peux pas trouver la taille de nombres des sommets pour laquelle Nmax arrive a 5 pour couplage
+# car mon terminal est killed.
+graph_v5 = Graph.Graph.random_graph(350, 0.3) # Sinon couplage plus rapide
+
+Nmax_couplage = Graph.Graph.measure_Nmax(graph_v5, "couplage")
+print("Nmax couplage: ", Nmax_couplage, " secondes")
+
+Nmax_glouton = Graph.Graph.measure_Nmax(graph_v5, "glouton")
+print("Nmax glouton: ", Nmax_glouton, " secondes")
