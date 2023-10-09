@@ -1,6 +1,8 @@
 import copy
 import numpy as np
 import random
+import matplotlib.pyplot as plt
+import time
 
 # V = ca doit etre un tableau?
 
@@ -94,7 +96,7 @@ class Graph:
 
     def max_degree(self) :           
         """
-        Retourne le sommet avec le degré maximum dans le dictionnaire { sommet : degré }
+        Cherche le degré maximum dans le dictionnaire { sommet : degré } et renvoie la cle
         """
 
         dico_deg = self.vertex_degrees()
@@ -105,7 +107,7 @@ class Graph:
             if dico_deg[e] > candMax :
                 candMax = dico_deg[e]
                 s = e
-        return s #je renvoie plutôt la clé du sommet car c'est ce qui est demandé dans l'énoncé
+        return s 
 
 #Question 2.2
 
@@ -175,3 +177,100 @@ class Graph:
                         covered.add(neighbour)
 
         return C
+
+    def algo_glouton(self) :
+        """
+        Renvoie une liste des sommets classés par degré décroissant sachant que lorsqu'on a saisi un sommet, 
+        on compare les derniers sommets entre eux, sans les aretes liés au sommet saisi
+        """
+
+        C = set() # Plutot liste? car dans la question c'est ecrit "emptyset" mais si c'est un ensemble ce n'est pas dans l'odre
+        graph_cpy = copy.deepcopy(self) 
+
+        while (graph_cpy.E != {}) :
+            Smax = graph_cpy.max_degree()   # Recupere le sommet avec le degre max du dictionnaire
+            C.add(Smax)                  # Ajoute le sommet Smax a la liste C                    
+            graph_cpy = graph_cpy.remove_vertex(Smax)   # Supprime Smax du dictionnaire
+        return C
+
+    def measure_time(graph, algorithm):
+        
+        start_time = time.time()
+
+        if algorithm == "couplage":
+            solution = graph.algo_couplage()
+
+        elif algorithm == "glouton":
+            solution = graph.algo_glouton()
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+
+        return execution_time
+
+    def measure_execution_time_vertex(algorithm, num_graphs_per_size, Nmax, p):
+        
+        execution_times = []
+        sizes = [Nmax // 10 * i for i in range(1, 11)]
+
+        for nmax in sizes:
+            total_execution_time = 0
+
+            for _ in range(num_graphs_per_size):
+                graph = Graph.random_graph(nmax, p)
+
+                start_time = time.time()
+                if algorithm == "glouton":
+                    solution = graph.algo_glouton()
+
+                elif algorithm == "couplage":
+                    solution = graph.algo_couplage()
+
+                end_time = time.time()
+                execution_time = end_time - start_time
+
+                total_execution_time += execution_time
+
+            average_execution_time = total_execution_time / num_graphs_per_size
+            execution_times.append(average_execution_time)
+
+        # Tracer la courbe du temps en fonction de la taille de l'instance
+        plt.plot(sizes, execution_times, marker='o')
+        plt.xlabel("Taille de l'instance (nombre de sommets)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
+        plt.show()
+
+
+        def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
+        
+            execution_times = []
+            sizes = [Nmax // 10 * i for i in range(1, 11)]
+
+            for nmax in sizes:
+                total_execution_time = 0
+
+                for _ in range(num_graphs_per_size):
+                    graph = Graph.random_graph(nb_vertices, nmax)
+
+                    start_time = time.time()
+                    if algorithm == "glouton":
+                        solution = graph.algo_glouton()
+
+                    elif algorithm == "couplage":
+                        solution = graph.algo_couplage()
+
+                    end_time = time.time()
+                    execution_time = end_time - start_time
+
+                    total_execution_time += execution_time
+
+                average_execution_time = total_execution_time / num_graphs_per_size
+                execution_times.append(average_execution_time)
+
+            # Tracer la courbe du temps en fonction de la taille de l'instance
+            plt.plot(sizes, execution_times, marker='o')
+            plt.xlabel("Taille de l'instance (nombre de probabilites)")
+            plt.ylabel("Temps d'exécution moyen (secondes)")
+            plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
+            plt.show()
