@@ -36,6 +36,13 @@ print("La couverture obtenue a partir de graph est: ", couverture)
 
 print(f'La liste après l algo glouton est : {graph.algo_glouton()}')
 
+filename = "graph.txt"
+graph_from_file = Graph.Graph.create_graph_from_file(filename)
+print("Graphe depuis fichier: ")
+print("Sommets:", graph_from_file.V)
+print("Aretes:", graph_from_file.E)
+
+
 # Mesure de Nmax_vertex
 #graph_v6 = Graph.Graph.random_graph(30000, 0.3) 
 # Mon terminal est killed lors de la creation d'un graphe comme ca, je vois pas pourquoi
@@ -70,9 +77,3 @@ print("Temps glouton: ", temps_glouton_proba, " secondes", " pour Nmax(proba) = 
 
 #Graph.Graph.measure_execution_time_proba("glouton", 10, 50, Nmax_proba)     a tester
 #Graph.Graph.measure_execution_time_vertex("couplage", 10, 50, Nmax_proba)   a tester
-
-
-
-
-
-
