@@ -161,20 +161,26 @@ class Graph:
 
         return C
 
-    def algo_glouton(self) :
+
+    def algo_glouton(self):
         """
         Renvoie une liste des sommets classés par degré décroissant sachant que lorsqu'on a saisi un sommet, 
         on compare les derniers sommets entre eux, sans les aretes liés au sommet saisi
         """
-
-        C = set() # Plutot liste? car dans la question c'est ecrit "emptyset" mais si c'est un ensemble ce n'est pas dans l'odre
+        
+        C = set() #plutôt liste? car dans la question c écrit "emptyset" mais si c'est un ensemble ce n'est pas dans l'odre
         graph_cpy = copy.deepcopy(self) 
 
-        while (graph_cpy.E != {}) :
-            Smax = graph_cpy.max_degree()   # Recupere le sommet avec le degre max du dictionnaire
-            C.add(Smax)                  # Ajoute le sommet Smax a la liste C                    
-            graph_cpy = graph_cpy.remove_vertex(Smax)   # Supprime Smax du dictionnaire
+        while ( graph_cpy.E != {}) :
+  
+            Smax = graph_cpy.max_degree()   #récupère le sommet avec le degre max du dictionnaire
+            if len(graph_cpy.E[Smax]) == 0 :
+                graph_cpy = graph_cpy.remove_vertex(Smax)
+            else :
+                C.add(Smax)                  #ajoute le sommet Smax à la liste C                    
+                graph_cpy = graph_cpy.remove_vertex(Smax)   #Supprime Smax du dictionnaire
         return C
+        
 
     def measure_time(graph, algorithm):
         
@@ -225,35 +231,76 @@ class Graph:
         plt.show()
 
 
-        def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
+    def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
         
-            execution_times = []
-            sizes = [Nmax // 10 * i for i in range(1, 11)]
+        execution_times = []
+        sizes = [Nmax // 10 * i for i in range(1, 11)]
 
-            for nmax in sizes:
-                total_execution_time = 0
+        for nmax in sizes:
+            total_execution_time = 0
 
-                for _ in range(num_graphs_per_size):
-                    graph = Graph.random_graph(nb_vertices, nmax)
+            for _ in range(num_graphs_per_size):
+                graph = Graph.random_graph(nb_vertices, nmax)
 
-                    start_time = time.time()
-                    if algorithm == "glouton":
-                        solution = graph.algo_glouton()
+                start_time = time.time()
+                if algorithm == "glouton":
+                    solution = graph.algo_glouton()
 
-                    elif algorithm == "couplage":
-                        solution = graph.algo_couplage()
+                elif algorithm == "couplage":
+                    solution = graph.algo_couplage()
 
-                    end_time = time.time()
-                    execution_time = end_time - start_time
+                end_time = time.time()
+                execution_time = end_time - start_time
 
-                    total_execution_time += execution_time
+                total_execution_time += execution_time
 
-                average_execution_time = total_execution_time / num_graphs_per_size
-                execution_times.append(average_execution_time)
+            average_execution_time = total_execution_time / num_graphs_per_size
+            execution_times.append(average_execution_time)
 
-            # Tracer la courbe du temps en fonction de la taille de l'instance
-            plt.plot(sizes, execution_times, marker='o')
-            plt.xlabel("Taille de l'instance (nombre de probabilites)")
-            plt.ylabel("Temps d'exécution moyen (secondes)")
-            plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
-            plt.show()
+        # Tracer la courbe du temps en fonction de la taille de l'instance
+        plt.plot(sizes, execution_times, marker='o')
+        plt.xlabel("Taille de l'instance (nombre de probabilites)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
+        plt.show()
+
+        
+    def create_graph_from_file(filename):
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+
+        # Initialisation des variables
+        vertices = set()
+        edges = []
+
+        # Parcourir les lignes du fichier
+        for line in lines:
+            line = line.strip()
+
+            if line == "Nombre de sommets":
+                read_vertices = False
+                read_edges = False
+            elif line == "Sommets":
+                read_vertices = True
+                read_edges = False
+            elif line == "Nombre d aretes":
+                read_vertices = False
+            elif line == "Aretes":
+                read_vertices = False
+                read_edges = True
+            elif read_vertices and line.isdigit():
+                vertices.add(int(line))
+            elif read_edges:
+                v1, v2 = map(int, line.split())
+                # Vérifier que v1 et v2 sont dans la liste des sommets
+                if v1 in vertices and v2 in vertices:
+                    edges.append((v1, v2))
+
+        # Créer un objet Graphe
+        graph = Graph(vertices)
+
+        # Ajouter les arêtes au graphe en utilisant insert_edge
+        for v1, v2 in edges:
+            graph.insert_edge(v1, v2)
+
+        return graph
