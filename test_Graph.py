@@ -75,22 +75,32 @@ print("")
 """
 
 # Mesure Nmax_proba
-# (proba 0.3 a 0.99 avec 350 sommets augmente de 3 sec a 9.8 sec pour glouton)
-"""
-Nmax_proba_glouton = 0.99
-graph_v7 = Graph.Graph.random_graph(100, Nmax_proba_glouton)
-temps_couplage_proba_glouton = Graph.Graph.measure_time(graph_v7, "couplage")
-print("Temps couplage: ", temps_couplage_proba, " secondes", " pour Nmax(proba) = ", Nmax_proba)
 
-temps_glouton_proba = Graph.Graph.measure_time(graph_v7, "glouton")
-print("Temps glouton: ", temps_glouton_proba, " secondes", " pour Nmax(proba) = ", Nmax_proba)
+"""
+Nmax_proba_glouton = 0.95
+graph_v7 = Graph.Graph.random_graph(250, Nmax_proba_glouton)
+temps_couplage_proba_glouton = Graph.Graph.measure_time(graph_v7, "glouton")
+print("Temps glouton: ", temps_couplage_proba_glouton, " secondes", " pour Nmax(proba) = ", Nmax_proba_glouton)
+print("")
+# Temps glouton:  2.07  secondes  pour Nmax(proba) =  0.95 et 250 sommets
+"""
+"""
+Nmax_proba_couplage = 0.95
+graph_v8 = Graph.Graph.random_graph(10000, Nmax_proba_couplage)
+temps_couplage_proba = Graph.Graph.measure_time(graph_v8, "couplage")
+print("Temps couplage: ", temps_couplage_proba, " secondes", " pour Nmax(proba) = ", Nmax_proba_couplage)
+print("")
+# Temps couplage:  0.031255245208740234  secondes  pour Nmax(proba) =  0.95 et 10000 sommets
 """
 
 # Courbes temps / instance
 
-Nmax_vertex_glouton = 350
-Graph.Graph.measure_execution_time_vertex("glouton", 10, Nmax_vertex_glouton, 0.3) # Deja teste, capture ecran vm
-#Graph.Graph.measure_execution_time_vertex("couplage", 10, Nmax_vertex_glouton, 0.3) # Deja teste, capture ecran vm
+#Nmax_vertex_glouton = 350
+#Nmax_vertex_couplage = 10000
+#Graph.Graph.measure_execution_time_vertex("glouton", 10, Nmax_vertex_glouton, 0.3) # Deja teste, capture ecran vm
+#Graph.Graph.measure_execution_time_vertex("couplage", 10, Nmax_vertex_couplage, 0.3) # Deja teste, capture ecran vm, mais avec 350 sommets
 
-#Graph.Graph.measure_execution_time_proba("glouton", 10, 50, Nmax_proba)     a tester
-#Graph.Graph.measure_execution_time_vertex("couplage", 10, 50, Nmax_proba)   a tester
+#Nmax_proba_glouton = 0.95 #pour 250 sommets
+#Graph.Graph.measure_execution_time_proba("glouton", 10, Nmax_proba_glouton, 250)
+Nmax_proba_couplage = 0.95 #pour 5000 sommets, car sinon ca va prendre trop de temps a generer des graphes aleatoires
+Graph.Graph.measure_execution_time_proba("couplage", 10, Nmax_proba_couplage, 5000)
