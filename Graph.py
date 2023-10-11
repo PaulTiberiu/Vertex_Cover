@@ -4,7 +4,6 @@ import random
 import matplotlib.pyplot as plt
 import time
 
-# V = ca doit etre un tableau?
 
 class Graph:
     V = set # Ensemble de sommets (la liste de sommets) 
@@ -76,12 +75,6 @@ class Graph:
 
 #Question 2.1.3
 
-    """
-    def ens_to_tab(Ens):
-        T = np.array(list(Ens))  # Convertissez l'ensemble dans une liste, puis en un tableau numpy
-        return T
-    """
-
     def vertex_degrees(self) :        
         """
         Renvoie un nouveau dictionnaire qui associe chaque sommet (clé) à son degré (valeur)
@@ -138,19 +131,36 @@ class Graph:
 
         return graph
 
+#Question 3.1
+
+    def optimal(self):
+        n = 2
+        glouton = self.algo_glouton()
+        couplage = self.algo_couplage()
+        while len(glouton) < len(couplage) :
+            n += 1
+            self = Graph.random_graph(n,0.6)
+            glouton = self.algo_glouton()
+            couplage = self.algo_couplage()
+            
+        return n
+
 
 #Question 3.2.2
 
     def algo_glouton(self) :
-        """ Renvoie une liste des sommets classés par degré décroissant sachant que lorsqu'on a saisi un sommet, 
-        on compare les derniers sommets entre eux, sans les aretes liés au sommet saisi"""
-        C = [] #plutôt liste? car dans la question c écrit "emptyset" mais si c'est un ensemble ce n'est pas dans l'odre
+        """ ..."""
+        C = set() #plutôt liste? car dans la question c écrit "emptyset" mais si c'est un ensemble ce n'est pas dans l'odre
         graph_cpy = copy.deepcopy(self) 
 
         while ( graph_cpy.E != {}) :
+                
             Smax = graph_cpy.max_degree()   #récupère le sommet avec le degre max du dictionnaire
-            C.append(Smax)                  #ajoute le sommet Smax à la liste C                    
-            graph_cpy = graph_cpy.remove_vertex(Smax)   #Supprime Smax du dictionnaire
+            if len(graph_cpy.E[Smax]) == 0 :
+                graph_cpy = graph_cpy.remove_vertex(Smax)
+            else :
+                C.add(Smax)                  #ajoute le sommet Smax à la liste C                    
+                graph_cpy = graph_cpy.remove_vertex(Smax)   #Supprime Smax du dictionnaire
         return C
      
 
@@ -178,20 +188,6 @@ class Graph:
 
         return C
 
-    def algo_glouton(self) :
-        """
-        Renvoie une liste des sommets classés par degré décroissant sachant que lorsqu'on a saisi un sommet, 
-        on compare les derniers sommets entre eux, sans les aretes liés au sommet saisi
-        """
-
-        C = set() # Plutot liste? car dans la question c'est ecrit "emptyset" mais si c'est un ensemble ce n'est pas dans l'odre
-        graph_cpy = copy.deepcopy(self) 
-
-        while (graph_cpy.E != {}) :
-            Smax = graph_cpy.max_degree()   # Recupere le sommet avec le degre max du dictionnaire
-            C.add(Smax)                  # Ajoute le sommet Smax a la liste C                    
-            graph_cpy = graph_cpy.remove_vertex(Smax)   # Supprime Smax du dictionnaire
-        return C
 
     def measure_time(graph, algorithm):
         
@@ -211,7 +207,7 @@ class Graph:
     def measure_execution_time_vertex(algorithm, num_graphs_per_size, Nmax, p):
         
         execution_times = []
-        sizes = [Nmax // 10 * i for i in range(1, 11)]
+        sizes = [Nmax // 10 * i for i in range(1, 11)]   # la multiplication de i mauvaise ?
 
         for nmax in sizes:
             total_execution_time = 0
@@ -274,3 +270,5 @@ class Graph:
             plt.ylabel("Temps d'exécution moyen (secondes)")
             plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
             plt.show()
+
+
