@@ -115,11 +115,10 @@ class Graph:
         Cree un graphe de n sommets ou chaque arete (i,j) est presente avec la probabilite p
         """
 
-
-        if n <= 0:
+        if n < 0:
             raise ValueError("Le parametre n doit etre superieur a 0")
 
-        if p <= 0 or p >= 1:
+        if p < 0 or p > 1:
             raise ValueError("Le parametre p doit etre entre 0 et 1")
 
         adjacents = None 
@@ -196,7 +195,7 @@ class Graph:
         execution_time = end_time - start_time
 
         return execution_time
-
+    
     def measure_execution_time_vertex(algorithm, num_graphs_per_size, Nmax, p):
         
         execution_times = []
@@ -234,7 +233,8 @@ class Graph:
     def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
         
         execution_times = []
-        sizes = [Nmax // 10 * i for i in range(1, 11)]
+        sizes = [Nmax / 10 * i for i in range(1, 11)]
+        print(sizes)
 
         for nmax in sizes:
             total_execution_time = 0
