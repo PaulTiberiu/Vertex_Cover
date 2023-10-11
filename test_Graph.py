@@ -77,7 +77,7 @@ print("La couverture obtenue est: ", couverture)
 
 # Courbes temps / instance
 
-#Graph.Graph.measure_execution_time_vertex("glouton", 10, Nmax_vertex, 0.3) # Deja teste, capture ecran vm
+# Graph.Graph.measure_execution_time_vertex("glouton", 10, 350, 0.3) # Deja teste, capture ecran vm
 #Graph.Graph.measure_execution_time_vertex("couplage", 10, Nmax_vertex, 0.3) # Deja teste, capture ecran vm
 
 #Graph.Graph.measure_execution_time_proba("glouton", 10, 50, Nmax_proba)     a tester

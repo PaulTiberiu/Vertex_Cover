@@ -142,7 +142,7 @@ class Graph:
             self = Graph.random_graph(n,0.6)
             glouton = self.algo_glouton()
             couplage = self.algo_couplage()
-            
+
         return n
 
 
@@ -271,4 +271,16 @@ class Graph:
             plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
             plt.show()
 
+
+
+#Question 4.1.1 
+
+
+def algo_branchement(self) :
+    C = set()
+
+    for s in self.V : 
+        C.add(s)
+        self = Graph.remove_vertex(self, s)
+    
 
