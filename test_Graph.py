@@ -42,8 +42,8 @@ couverture = graph.algo_couplage()
 print("La couverture obtenue a partir de graph est: ", couverture)
 print("")
 
-print(f'La liste après l algo glouton est : {graph.algo_glouton()}')
-print("")
+#print(f'La liste après l algo glouton est : {graph.algo_glouton()}')
+#print("")
 
 filename = "graph.txt"
 graph_from_file = Graph.Graph.create_graph_from_file(filename)
@@ -51,20 +51,27 @@ print("Graphe depuis fichier: ")
 print("Sommets:", graph_from_file.V)
 print("Aretes:", graph_from_file.E)
 print("")
+couverture = graph_from_file.algo_couplage()
+print("La couverture obtenue a partir de graph est: ", couverture)
+print("")
 
+# Test algo glouton pas optimal
+#n = Graph.Graph.optimal_couplage_glouton()
 
 # Mesure de Nmax_vertex
 # Couplage plus rapide dans le cas de sommets
 # random_graph prends beaucoup de temps lorsqu'on augmente les nombres des sommets (50.000 par exemple)
 
 """
-Nmax_vertex_couplage = 10000
+Nmax_vertex_couplage = 7000
 graph_v6 = Graph.Graph.random_graph(Nmax_vertex_couplage, 0.3) # ca prend beaucoup plus de temps que l'execution de l'algo couplage
 temps_couplage = Graph.Graph.measure_time(graph_v6, "couplage")
 print("Temps couplage: ", temps_couplage, " secondes", " pour Nmax(sommets) = ", Nmax_vertex_couplage)
 print("")
-# Temps couplage:  0.02478313446044922  secondes  pour Nmax(sommets) =  10000, si on augmente le nombre de sommets ca prends trop de temps pour generer un graph aleatoire
+# Temps couplage:  2.7588300704956055  secondes  pour Nmax(sommets) =  3500
 """
+
+
 """
 Nmax_vertex_glouton = 350
 graph_v5 = Graph.Graph.random_graph(Nmax_vertex_glouton, 0.3)
@@ -86,21 +93,21 @@ print("")
 """
 """
 Nmax_proba_couplage = 0.95
-graph_v8 = Graph.Graph.random_graph(10000, Nmax_proba_couplage)
+graph_v8 = Graph.Graph.random_graph(6500, Nmax_proba_couplage)
 temps_couplage_proba = Graph.Graph.measure_time(graph_v8, "couplage")
 print("Temps couplage: ", temps_couplage_proba, " secondes", " pour Nmax(proba) = ", Nmax_proba_couplage)
 print("")
-# Temps couplage:  0.031255245208740234  secondes  pour Nmax(proba) =  0.95 et 10000 sommets
+#Temps couplage:  1.9830338954925537  secondes  pour Nmax(proba) =  0.95 et 6500 sommets
 """
 
 # Courbes temps / instance
 
-#Nmax_vertex_glouton = 350
-#Nmax_vertex_couplage = 10000
-#Graph.Graph.measure_execution_time_vertex("glouton", 10, Nmax_vertex_glouton, 0.3) # Deja teste, capture ecran vm
-#Graph.Graph.measure_execution_time_vertex("couplage", 10, Nmax_vertex_couplage, 0.3) # Deja teste, capture ecran vm, mais avec 350 sommets
+Nmax_vertex_glouton = 350
+Graph.Graph.measure_execution_time_vertex("glouton", 10, Nmax_vertex_glouton, 0.3) #Pente de la régression linéaire: 2.66
+#Nmax_vertex_couplage = 7000
+#Graph.Graph.measure_execution_time_vertex("couplage", 10, Nmax_vertex_couplage, 0.3) #Pente de la régression linéaire: 1.97
 
 #Nmax_proba_glouton = 0.95 #pour 250 sommets
 #Graph.Graph.measure_execution_time_proba("glouton", 10, Nmax_proba_glouton, 250)
-Nmax_proba_couplage = 0.95 #pour 5000 sommets, car sinon ca va prendre trop de temps a generer des graphes aleatoires
-Graph.Graph.measure_execution_time_proba("couplage", 10, Nmax_proba_couplage, 5000)
+#Nmax_proba_couplage = 0.95 #pour 6500 sommets
+#Graph.Graph.measure_execution_time_proba("couplage", 10, Nmax_proba_couplage, 6500)
