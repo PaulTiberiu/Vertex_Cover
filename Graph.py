@@ -135,30 +135,19 @@ class Graph:
                     graph.insert_edge(i, j)
 
         return graph
+    
 
-    def algo_couplage(self):
-        """
-        Couplage = ensemble d'aretes n'ayant pas d'exremite en commun
-        """
+    def algo_couplage(self) : 
+        C = set()  # Crée un ensemble vide pour stocker la couverture
 
-        C = set()
-        covered = set()
+        for u in self.V:  # Parcours de chaque sommet u dans V
+            for v in self.E[u]:  # Parcours des arêtes adjacentes à u
+                # Vérifie si aucune des deux extrémités n'est déjà dans C
+                if u not in C and v not in C:
+                    C.add(u)  # Ajoute u à la couverture
+                    C.add(v)  # Ajoute v à la couverture
 
-        # Parcourir toutes les arêtes dans le graphe
-        for vertex in self.V:
-            # Si le sommet n'est pas déjà couvert
-            if vertex not in covered:
-                for neighbour in self.E[vertex]:
-                    # Si le voisin n'est pas déjà couvert
-                    if neighbour not in covered:
-                        # Ajouter le sommet et son voisin à C
-                        C.add(vertex)
-                        C.add(neighbour)
-                        # Marquer les deux sommets comme couverts
-                        covered.add(vertex)
-                        covered.add(neighbour)
-
-        return C
+        return C  # Renvoie la couverture
 
 
     def algo_glouton(self):
@@ -223,11 +212,41 @@ class Graph:
             execution_times.append(average_execution_time)
 
         # Tracer la courbe du temps en fonction de la taille de l'instance
+        # A transformer les trucs en log
+        # Puis plot de nouveau en echelle log => lineaire voir pente pour degree polynome
         plt.plot(sizes, execution_times, marker='o')
         plt.xlabel("Taille de l'instance (nombre de sommets)")
         plt.ylabel("Temps d'exécution moyen (secondes)")
         plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
         plt.show()
+
+        # Tracer la courbe en échelle logarithmique
+        plt.figure()
+        plt.plot(sizes, execution_times, marker='o', label="Temps réel")
+        plt.yscale('log')
+        plt.xscale('log')
+        plt.xlabel("Taille de l'instance (nombre de sommets) en log")
+        plt.ylabel("Temps d'exécution moyen (log secondes)")
+        plt.title(f"Temps d'exécution de l'algorithme {algorithm} (log-log scale)")
+
+        # Calculer la pente (coefficient directeur) de la régression linéaire en utilisant NumPy
+        log_sizes = np.log(sizes)
+        log_times = np.log(execution_times)
+        slope, intercept = np.polyfit(log_sizes, log_times, 1)
+        plt.plot(sizes, np.exp(slope * log_sizes + intercept), 'r--', label="Régression linéaire")
+
+        print(f"Pente de la régression linéaire: {slope:.2f}")
+
+        plt.legend()
+        plt.show()
+
+        """
+        plt.plot(np.log(sizes), np.log(execution_times), marker='o')
+        plt.xlabel("Taille de l'instance (nombre de sommets)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
+        plt.show()
+        """
 
 
     def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
@@ -304,3 +323,25 @@ class Graph:
             graph.insert_edge(v1, v2)
 
         return graph
+    
+    def optimal_couplage_glouton(): 
+        n = 2
+        graph = Graph.random_graph(n, 0.5) # Creer un graphe aleatoire
+        print(graph.V)
+        print(graph.E)
+        glouton = graph.algo_glouton()
+        couplage = graph.algo_couplage()
+
+        while len(glouton) <= len(couplage) : # Tant que glouton trouve une solution plus optimale que couplage
+            n += 1
+            print(n)
+            graph = Graph.random_graph(n,0.3)
+            glouton = graph.algo_glouton()
+            couplage = graph.algo_couplage()
+            
+        print("Sommets :", graph.V)
+        print("Aretes: ", graph.E)
+        print("Solution couplage: ", couplage)
+        print("Solution glouton: ", glouton)
+        print("n")
+        return n
