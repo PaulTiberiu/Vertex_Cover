@@ -32,9 +32,15 @@ graph_v4 = Graph.Graph.random_graph(n, p)
 
 
 print(f'Graphe avec {n} sommets et des aretes creees avec une probabilite {p}\n sommets : {graph_v4.V}\n aretes : {graph_v4.E}')
-print(f'La couverture après l algo glouton est : {graph_v4.algo_glouton()}')
+# print(f'La couverture après l algo glouton est : {graph_v4.algo_glouton()}')
+
+sommets = {0,1,2,3,4}
+aretes = {0 : {1,3} , 1 : {0,2,4}, 2 : {1,3,4}, 3 : {0,2},4 :{1,2}}
+graph_test = Graph.Graph(sommets,aretes)
 couverture = graph_v4.algo_couplage()
-print("La couverture obtenue est: ", couverture)
+print("La couverture obtenue après couplage est: ", couverture)
+print(f'La couverture après l algo glouton est : {graph_v4.algo_glouton()}')
+
 
 
 

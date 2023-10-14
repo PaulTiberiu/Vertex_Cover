@@ -164,29 +164,37 @@ class Graph:
         return C
      
 
+    def get_edges(self):
+        """
+        Cette méthode retourne une liste de toutes les arêtes sous forme de couples (v1, v2). Elle est utile pour pouvoir implementer l'algo couplage
+        """
+        edges = set()
+        for v1, connected_vertices in self.E.items():
+            for v2 in connected_vertices:
+                if (v1, v2) not in edges and (v2, v1) not in edges:
+                    edges.add((v1, v2))
+        return edges
+
     def algo_couplage(self):
         """
         Couplage = ensemble d'aretes n'ayant pas d'exremite en commun
         """
+        C = set()  # L'ensemble résultant
+        covered = set()  # Les sommets déjà couverts
 
-        C = set()
-        covered = set()
+        edges = self.get_edges()
 
-        # Parcourir toutes les arêtes dans le graphe
-        for vertex in self.V:
-            # Si le sommet n'est pas déjà couvert
-            if vertex not in covered:
-                for neighbour in self.E[vertex]:
-                    # Si le voisin n'est pas déjà couvert
-                    if neighbour not in covered:
-                        # Ajouter le sommet et son voisin à C
-                        C.add(vertex)
-                        C.add(neighbour)
-                        # Marquer les deux sommets comme couverts
-                        covered.add(vertex)
-                        covered.add(neighbour)
+        for v1, v2 in edges:
+            # Si aucune des extrémités de l'arête n'est dans C
+            if v1 not in covered and v2 not in covered:
+                C.add(v1)
+                C.add(v2)
+                covered.add(v1)
+                covered.add(v2)
 
         return C
+    
+
 
 
     def measure_time(graph, algorithm):
