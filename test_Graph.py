@@ -55,6 +55,10 @@ couverture = graph_from_file.algo_couplage()
 print("La couverture obtenue a partir de graph est: ", couverture)
 print("")
 
+# Test branch and bound sans bornes
+solution = Graph.Graph.branch_and_bound_simple(graph_from_file)
+print("Solution de branch and bound: ", solution)
+
 # Test algo glouton pas optimal
 #n = Graph.Graph.optimal_couplage_glouton()
 
@@ -101,11 +105,10 @@ print("")
 """
 
 # Courbes temps / instance
-
-Nmax_vertex_glouton = 350
-Graph.Graph.measure_execution_time_vertex("glouton", 10, Nmax_vertex_glouton, 0.3) #Pente de la régression linéaire: 2.66
-#Nmax_vertex_couplage = 7000
-#Graph.Graph.measure_execution_time_vertex("couplage", 10, Nmax_vertex_couplage, 0.3) #Pente de la régression linéaire: 1.97
+# Nmax_vertex_glouton = 350
+# Graph.Graph.measure_execution_time_vertex("glouton", 10, Nmax_vertex_glouton, 0.3) #Pente de la régression linéaire: 2.66, 2.71
+# Nmax_vertex_couplage = 7000
+# Graph.Graph.measure_execution_time_vertex("couplage", 10, Nmax_vertex_couplage, 0.3) #Pente de la régression linéaire: 1.97, 2.5
 
 #Nmax_proba_glouton = 0.95 #pour 250 sommets
 #Graph.Graph.measure_execution_time_proba("glouton", 10, Nmax_proba_glouton, 250)
