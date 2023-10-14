@@ -109,11 +109,10 @@ class Graph:
         Cree un graphe de n sommets ou chaque arete (i,j) est presente avec la probabilite p
         """
 
-
-        if n <= 0:
+        if n < 0:
             raise ValueError("Le parametre n doit etre superieur a 0")
 
-        if p <= 0 or p >= 1:
+        if p < 0 or p > 1:
             raise ValueError("Le parametre p doit etre entre 0 et 1")
 
         adjacents = None 
@@ -130,6 +129,7 @@ class Graph:
                     graph.insert_edge(i, j)
 
         return graph
+    
 
 #Question 3.1
 
@@ -195,8 +195,6 @@ class Graph:
         return C
     
 
-
-
     def measure_time(graph, algorithm):
         
         start_time = time.time()
@@ -211,7 +209,7 @@ class Graph:
         execution_time = end_time - start_time
 
         return execution_time
-
+    
     def measure_execution_time_vertex(algorithm, num_graphs_per_size, Nmax, p):
         
         execution_times = []
@@ -239,38 +237,69 @@ class Graph:
             execution_times.append(average_execution_time)
 
         # Tracer la courbe du temps en fonction de la taille de l'instance
+        # A transformer les trucs en log
+        # Puis plot de nouveau en echelle log => lineaire voir pente pour degree polynome
         plt.plot(sizes, execution_times, marker='o')
         plt.xlabel("Taille de l'instance (nombre de sommets)")
         plt.ylabel("Temps d'exécution moyen (secondes)")
         plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
         plt.show()
 
+        # Tracer la courbe en échelle logarithmique
+        plt.figure()
+        plt.plot(sizes, execution_times, marker='o', label="Temps réel")
+        plt.yscale('log')
+        plt.xscale('log')
+        plt.xlabel("Taille de l'instance (nombre de sommets) en log")
+        plt.ylabel("Temps d'exécution moyen (log secondes)")
+        plt.title(f"Temps d'exécution de l'algorithme {algorithm} (log-log scale)")
 
-        def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
+        # Calculer la pente (coefficient directeur) de la régression linéaire en utilisant NumPy
+        log_sizes = np.log(sizes)
+        log_times = np.log(execution_times)
+        slope, intercept = np.polyfit(log_sizes, log_times, 1)
+        plt.plot(sizes, np.exp(slope * log_sizes + intercept), 'r--', label="Régression linéaire")
+
+        print(f"Pente de la régression linéaire: {slope:.2f}")
+
+        plt.legend()
+        plt.show()
+
+        """
+        plt.plot(np.log(sizes), np.log(execution_times), marker='o')
+        plt.xlabel("Taille de l'instance (nombre de sommets)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
+        plt.show()
+        """
+
+
+    def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
         
-            execution_times = []
-            sizes = [Nmax // 10 * i for i in range(1, 11)]
+        execution_times = []
+        sizes = [Nmax / 10 * i for i in range(1, 11)]
+        print(sizes)
 
-            for nmax in sizes:
-                total_execution_time = 0
+        for nmax in sizes:
+            total_execution_time = 0
 
-                for _ in range(num_graphs_per_size):
-                    graph = Graph.random_graph(nb_vertices, nmax)
+            for _ in range(num_graphs_per_size):
+                graph = Graph.random_graph(nb_vertices, nmax)
 
-                    start_time = time.time()
-                    if algorithm == "glouton":
-                        solution = graph.algo_glouton()
+                start_time = time.time()
+                if algorithm == "glouton":
+                    solution = graph.algo_glouton()
 
-                    elif algorithm == "couplage":
-                        solution = graph.algo_couplage()
+                elif algorithm == "couplage":
+                    solution = graph.algo_couplage()
 
-                    end_time = time.time()
-                    execution_time = end_time - start_time
+                end_time = time.time()
+                execution_time = end_time - start_time
 
-                    total_execution_time += execution_time
+                total_execution_time += execution_time
 
-                average_execution_time = total_execution_time / num_graphs_per_size
-                execution_times.append(average_execution_time)
+            average_execution_time = total_execution_time / num_graphs_per_size
+            execution_times.append(average_execution_time)
 
             # Tracer la courbe du temps en fonction de la taille de l'instance
             plt.plot(sizes, execution_times, marker='o')
@@ -292,3 +321,65 @@ def algo_branchement(self) :
         self = Graph.remove_vertex(self, s)
     
 
+        
+    def create_graph_from_file(filename):
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+
+        # Initialisation des variables
+        vertices = set()
+        edges = []
+
+        # Parcourir les lignes du fichier
+        for line in lines:
+            line = line.strip()
+
+            if line == "Nombre de sommets":
+                read_vertices = False
+                read_edges = False
+            elif line == "Sommets":
+                read_vertices = True
+                read_edges = False
+            elif line == "Nombre d aretes":
+                read_vertices = False
+            elif line == "Aretes":
+                read_vertices = False
+                read_edges = True
+            elif read_vertices and line.isdigit():
+                vertices.add(int(line))
+            elif read_edges:
+                v1, v2 = map(int, line.split())
+                # Vérifier que v1 et v2 sont dans la liste des sommets
+                if v1 in vertices and v2 in vertices:
+                    edges.append((v1, v2))
+
+        # Créer un objet Graphe
+        graph = Graph(vertices)
+
+        # Ajoute les arêtes au graphe en utilisant insert_edge
+        for v1, v2 in edges:
+            graph.insert_edge(v1, v2)
+
+        return graph
+    
+    def optimal_couplage_glouton(): 
+        n = 2
+        graph = Graph.random_graph(n, 0.5) # Creer un graphe aleatoire
+        print(graph.V)
+        print(graph.E)
+        glouton = graph.algo_glouton()
+        couplage = graph.algo_couplage()
+
+        while len(glouton) <= len(couplage) : # Tant que glouton trouve une solution plus optimale que couplage
+            n += 1
+            print(n)
+            graph = Graph.random_graph(n,0.3)
+            glouton = graph.algo_glouton()
+            couplage = graph.algo_couplage()
+            
+        print("Sommets :", graph.V)
+        print("Aretes: ", graph.E)
+        print("Solution couplage: ", couplage)
+        print("Solution glouton: ", glouton)
+        print("n")
+        return n
