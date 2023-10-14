@@ -43,7 +43,7 @@ class Graph:
         if v not in G_cpy.V :         # S'il n'est pas dans l'ensemble de sommets, on quitte de la fonction
             return
         
-        for vertex in G_cpy.E[v]:    # Apres avoir supprimme toutes les areetes du sommet v
+        for vertex in G_cpy.E[v]:    # Apres avoir supprimme toutes les aretes du sommet v 
             G_cpy.E[vertex].remove(v)
 
         del G_cpy.E[v]               # On supprime le sommet dans le dictionnaire d'arretes
@@ -218,7 +218,6 @@ class Graph:
         plt.xlabel("Taille de l'instance (nombre de sommets)")
         plt.ylabel("Temps d'exécution moyen (secondes)")
         plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
-        plt.show()
 
         # Tracer la courbe en échelle logarithmique
         plt.figure()
@@ -235,18 +234,25 @@ class Graph:
         slope, intercept = np.polyfit(log_sizes, log_times, 1)
         plt.plot(sizes, np.exp(slope * log_sizes + intercept), 'r--', label="Régression linéaire")
 
-        print(f"Pente de la régression linéaire: {slope:.2f}")
+        print(f"Pente de la régression linéaire (log log): {slope:.2f}")
+
+        plt.legend()
+
+        # Tracer la courbe y et log(x) pour avoir la base de l'exponentiel, mais c'est pas une droite....
+        plt.figure()
+        plt.plot(sizes, execution_times, marker='o', label="log(Temps réel)")
+        plt.xscale('log')
+        plt.xlabel("Taille de l'instance log(nombre de sommets)")
+        plt.ylabel("Temps d'exécution moyen")
+        plt.title(f"Logarithme du nombre de sommets de l'algorithme {algorithm}")
+
+        # Calculer la pente (coefficient directeur) de la régression linéaire en utilisant NumPy
+        slope2, intercept = np.polyfit(sizes, np.log(execution_times), 1)
+        print(f"Pente = Base de la régression linéaire: {slope2:.2f}")
+        #plt.plot(sizes, np.exp(slope * log_sizes + intercept), 'r--', label="Régression linéaire")
 
         plt.legend()
         plt.show()
-
-        """
-        plt.plot(np.log(sizes), np.log(execution_times), marker='o')
-        plt.xlabel("Taille de l'instance (nombre de sommets)")
-        plt.ylabel("Temps d'exécution moyen (secondes)")
-        plt.title(f"Temps d'exécution de l'algorithme {algorithm}")
-        plt.show()
-        """
 
 
     def measure_execution_time_proba(algorithm, num_graphs_per_size, Nmax, nb_vertices):
@@ -345,3 +351,113 @@ class Graph:
         print("Solution glouton: ", glouton)
         print("n")
         return n
+   
+
+    def remove_vertex_self(self, v):
+        """
+        Modifie le graphe passe en parametre sans le sommet v, sans le renvoyer
+        """
+
+        if v not in self.V or v not in self.E: # S'il n'est pas dans l'ensemble de sommets, on quitte de la fonction
+            return 
+        
+        for vertex in self.E[v]: # Apres avoir supprimme toutes les aretes du sommet v 
+            self.E[vertex].remove(v)
+
+        del self.E[v] # On supprime le sommet dans le dictionnaire d'arretes
+
+        self.V.remove(v) # On supprime le sommet dans l'ensemble des sommets
+        
+
+    def branch_and_bound(self): # solution realisable, mais pas OPTIMALE!
+        # Initialisation de la meilleure solution
+        best_solution = set()
+
+        # Initialisation de la pile (utiliser une liste pour simuler une pile)
+        stack = [(self, set())]
+
+        # Ouvrir un fichier pour écrire les informations, comme ca on evite de surcharger le terminal
+        with open("branch_and_bound_log.txt", "w") as log_file:
+            while stack:
+                graph, current_solution = stack.pop() # Current solution c'est l'ensemble de sommets qu'on insere dans la pile lors d'un branchement
+
+                log_file.write("La pile: \n")
+                log_file.write(f"Graph: {graph.V}, {graph.E}\n")
+                log_file.write(f"Current Solution: {current_solution}\n\n")
+
+                # Mettre à jour la meilleure solution si nécessaire
+                if len(current_solution) > len(best_solution):
+                    best_solution = current_solution
+                    log_file.write(f"Mise a jour meilleure solution: {best_solution}\n\n")
+
+                if graph.E:  # S'il reste des arêtes dans le graphe
+                    # Parcourir chaque sommet et ses arêtes adjacentes
+                    for u in graph.V:
+                        for v in graph.E[u]:
+                            # Créer une copie du graphe sans l'arête (u, v)
+                            new_graph_u = graph.remove_vertex_self(u)
+                            log_file.write(f"Graphe sans le sommet: {u}, {new_graph_u.V}, {new_graph_u.E}\n")
+                            new_graph_v = graph.remove_vertex_self(v)
+                            log_file.write(f"Graphe sans le sommet: {v}, {new_graph_v.V}, {new_graph_v.E}\n\n")
+
+                            # Brancher en ajoutant u dans la couverture
+                            stack.append((new_graph_u, current_solution | {u}))
+                            log_file.write(f"La pile update sans le sommet: {u}\n")
+                            log_file.write(f"Graph: {new_graph_u.V}, {new_graph_u.E}\n")
+                            log_file.write(f"Current Solution: {current_solution}\n\n")
+
+                            # Brancher en ajoutant v dans la couverture
+                            stack.append((new_graph_v, current_solution | {v}))
+                            log_file.write(f"La pile update sans le sommet: {v}\n")
+                            log_file.write(f"Graph: {new_graph_v.V}, {new_graph_v.E}\n")
+                            log_file.write(f"Current Solution: {current_solution}\n\n")
+
+        return best_solution
+
+
+    def branch_and_bound_simple(self):
+        best_solution = None
+        stack = []  # Initialisation d'une pile pour le parcours en profondeur
+        initial_solution = set()  # Initialisation de la solution actuelle (vide)
+        stack.append((self, initial_solution))  # Ajout du graphe initial à la pile avec une solution vide
+
+        while stack:  # Boucle principale de l'algorithme
+            graph, cover = stack.pop()  # Récupération de l'état actuel du graphe et de la solution
+
+            # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
+            if not graph.V or all(len(value) == 0 for value in graph.E.values()):
+                # Si c'est le cas et que la solution actuelle est meilleure que la meilleure solution trouvée
+                if best_solution is None or len(cover) < len(best_solution):
+                    best_solution = cover  # Mettre à jour la meilleure solution
+
+            # Recherche d'un sommet u de l'arête à brancher
+            u = -1
+            v = -1
+
+            for vertex, edges in graph.E.items():
+                if len(edges) != 0:
+                    u = vertex
+                    for v in edges:
+                        break  # On récupère le premier sommet v avec une arête
+                    if u != -1:
+                        break
+
+            # Si un sommet u a été trouvé, on effectue les branchements
+            if u != -1:
+                # Branchement en ajoutant u dans la couverture
+                new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
+                new_graph.remove_vertex_self(u)  # Suppression de u du graphe
+                new_cover = cover.copy()  # Copie de la solution actuelle
+                new_cover.add(u)  # Ajout de u à la couverture
+                stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
+
+                # Branchement en ajoutant v dans la couverture
+                new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
+                new_graph.remove_vertex_self(v)  # Suppression de v du graphe
+                new_cover = cover.copy()  # Copie de la solution actuelle
+                new_cover.add(v)  # Ajout de v à la couverture
+                stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
+
+        return best_solution  # Retourne la meilleure solution trouvée
+
+
