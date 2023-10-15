@@ -3,6 +3,7 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import time
+import math
 
 # V = ca doit etre un tableau?
 
@@ -351,8 +352,9 @@ class Graph:
         print("Solution glouton: ", glouton)
         print("n")
         return n        
+    
 
-    def branch_and_bound_simple(self):
+    def branch_simple(self):
         best_solution = None
         stack = []  # Initialisation d'une pile pour le parcours en profondeur
         initial_solution = set()  # Initialisation de la solution actuelle (vide)
@@ -396,5 +398,153 @@ class Graph:
                 stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
 
         return best_solution  # Retourne la meilleure solution trouvée
+    
+    
+    def measure_execution_time_branch_simple_mean(num_graphs_per_size, Nmax, p):
+        execution_times = []
+
+        for n in range(1, Nmax + 1):
+            total_execution_time = 0
+
+            for _ in range(num_graphs_per_size):
+                graph = Graph.random_graph(n, p)
+
+                start_time = time.time()
+                cover = graph.branch_and_bound_simple()
+                end_time = time.time()
+
+                execution_time = end_time - start_time
+                total_execution_time += execution_time
+
+            average_execution_time = total_execution_time / num_graphs_per_size
+            execution_times.append(average_execution_time)
+
+        # Plotting the execution time
+        plt.plot(range(1, Nmax + 1), execution_times, marker='o')
+        plt.xlabel("Size of the Graph (n)")
+        plt.ylabel("Average Execution Time (seconds)")
+        plt.title("Branch and Bound Execution Time vs. Graph Size")
+        plt.show()
+
+    def measure_execution_time_branch_simple(Nmax, p):
+        execution_times = []
+
+        for n in range(1, Nmax + 1):
+            graph = Graph.random_graph(n, p)
+            start_time = time.time()
+            cover = graph.branch_simple()
+            end_time = time.time()
+            execution_time = end_time - start_time
+            execution_times.append(execution_time)
+
+            if n % 5 == 0:
+                print(f"Processed {n} graphs. Total time: {sum(execution_times):.2f} seconds.")
+
+        # Tracé du temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), execution_times, marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.title("Temps d'exécution du Branchement simple en fonction de la taille du graphe")
+        plt.show()
 
 
+    def calculate_lower_bound(self):
+        """
+        Calcul de la borne inferieure
+        """
+
+        n = len(self.V) # Nombre de sommets
+        m = sum (len(v) for v in self.E.values()) / 2 # Nombre d'arêtes
+
+        # calcul des bornes
+        delta = len(self.E[self.max_degree()]) # Degré maximum des sommets du graphe
+
+        b1 = math.ceil(m / delta) if delta else 0
+        
+        M = (self.algo_couplage()) # Couplage du graphe
+        b2 = len(M)
+        
+        b3 = ( 2*n - 1 - math.sqrt((2*n - 1)**2 - 8*m) ) / 2
+
+        return max(b1, b2, b3)
+
+
+    def branch_and_bound(self):
+        """
+        Calcul de branch and bound en prenant en compte les bornes
+        """
+
+        best_solution = None
+        stack = []  # Initialisation d'une pile pour le parcours en profondeur
+        initial_solution = set()  # Initialisation de la solution actuelle (vide)
+        stack.append((self, initial_solution))  # Ajout du graphe initial à la pile avec une solution vide
+
+        while stack:  # Boucle principale de l'algorithme
+            graph, cover = stack.pop()  # Récupération de l'état actuel du graphe et de la solution
+
+            # Calcul de la borne inférieure
+            lower_bound = Graph.calculate_lower_bound(graph)
+
+            # Vérification de la réalisabilité
+            if best_solution is not None and len(cover) < lower_bound:
+                continue  # Élaguer cette branche
+
+            # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
+            if not graph.V or all(len(value) == 0 for value in graph.E.values()):
+                # Si c'est le cas et que la solution actuelle est meilleure que la meilleure solution trouvée
+                if best_solution is None or len(cover) < len(best_solution):
+                    best_solution = cover  # Mettre à jour la meilleure solution
+
+
+            if best_solution is None or len(cover) < len(best_solution):
+                
+                # Recherche d'un sommet u de l'arête à brancher
+                u = -1
+                v = -1
+
+                for vertex, edges in graph.E.items():
+                    if len(edges) != 0:
+                        u = vertex
+                        for v in edges:
+                            break  # On récupère le premier sommet v avec une arête
+                        if u != -1:
+                            break
+
+                # Si un sommet u a été trouvé, on effectue les branchements
+                if u != -1:
+                    # Branchement en ajoutant u dans la couverture
+                    new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
+                    new_graph = new_graph.remove_vertex(u)  # Suppression de u du graphe
+                    new_cover = cover.copy()  # Copie de la solution actuelle
+                    new_cover.add(u)  # Ajout de u à la couverture
+                    stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
+
+                    # Branchement en ajoutant v dans la couverture
+                    new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
+                    new_graph = new_graph.remove_vertex(v)  # Suppression de v du graphe
+                    new_cover = cover.copy()  # Copie de la solution actuelle
+                    new_cover.add(v)  # Ajout de v à la couverture
+                    stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
+
+        return best_solution  # Retourne la meilleure solution trouvée
+    
+
+    def measure_execution_time_branch_and_bound(Nmax, p):
+        execution_times = []
+
+        for n in range(1, Nmax + 1):
+            graph = Graph.random_graph(n, p)
+            start_time = time.time()
+            cover = graph.branch_and_bound()
+            end_time = time.time()
+            execution_time = end_time - start_time
+            execution_times.append(execution_time)
+            if n % 5 == 0:
+                print(f"Processed {n} graphs. Total time: {sum(execution_times):.2f} seconds.")
+
+        # Tracé du temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), execution_times, marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.title("Temps d'exécution du Branch and Bound en fonction de la taille du graphe")
+        plt.show()
