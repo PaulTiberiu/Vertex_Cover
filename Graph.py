@@ -350,24 +350,7 @@ class Graph:
         print("Solution couplage: ", couplage)
         print("Solution glouton: ", glouton)
         print("n")
-        return n
-   
-
-    def remove_vertex_self(self, v):
-        """
-        Modifie le graphe passe en parametre sans le sommet v, sans le renvoyer
-        """
-
-        if v not in self.V or v not in self.E: # S'il n'est pas dans l'ensemble de sommets, on quitte de la fonction
-            return 
-        
-        for vertex in self.E[v]: # Apres avoir supprimme toutes les aretes du sommet v 
-            self.E[vertex].remove(v)
-
-        del self.E[v] # On supprime le sommet dans le dictionnaire d'arretes
-
-        self.V.remove(v) # On supprime le sommet dans l'ensemble des sommets
-        
+        return n        
 
     def branch_and_bound(self): # solution realisable, mais pas OPTIMALE!
         # Initialisation de la meilleure solution
@@ -446,14 +429,14 @@ class Graph:
             if u != -1:
                 # Branchement en ajoutant u dans la couverture
                 new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
-                new_graph.remove_vertex_self(u)  # Suppression de u du graphe
+                new_graph = new_graph.remove_vertex(u)  # Suppression de u du graphe
                 new_cover = cover.copy()  # Copie de la solution actuelle
                 new_cover.add(u)  # Ajout de u à la couverture
                 stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
 
                 # Branchement en ajoutant v dans la couverture
                 new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
-                new_graph.remove_vertex_self(v)  # Suppression de v du graphe
+                new_graph = new_graph.remove_vertex(v)  # Suppression de v du graphe
                 new_cover = cover.copy()  # Copie de la solution actuelle
                 new_cover.add(v)  # Ajout de v à la couverture
                 stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
