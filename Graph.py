@@ -352,52 +352,6 @@ class Graph:
         print("n")
         return n        
 
-    def branch_and_bound(self): # solution realisable, mais pas OPTIMALE!
-        # Initialisation de la meilleure solution
-        best_solution = set()
-
-        # Initialisation de la pile (utiliser une liste pour simuler une pile)
-        stack = [(self, set())]
-
-        # Ouvrir un fichier pour écrire les informations, comme ca on evite de surcharger le terminal
-        with open("branch_and_bound_log.txt", "w") as log_file:
-            while stack:
-                graph, current_solution = stack.pop() # Current solution c'est l'ensemble de sommets qu'on insere dans la pile lors d'un branchement
-
-                log_file.write("La pile: \n")
-                log_file.write(f"Graph: {graph.V}, {graph.E}\n")
-                log_file.write(f"Current Solution: {current_solution}\n\n")
-
-                # Mettre à jour la meilleure solution si nécessaire
-                if len(current_solution) > len(best_solution):
-                    best_solution = current_solution
-                    log_file.write(f"Mise a jour meilleure solution: {best_solution}\n\n")
-
-                if graph.E:  # S'il reste des arêtes dans le graphe
-                    # Parcourir chaque sommet et ses arêtes adjacentes
-                    for u in graph.V:
-                        for v in graph.E[u]:
-                            # Créer une copie du graphe sans l'arête (u, v)
-                            new_graph_u = graph.remove_vertex_self(u)
-                            log_file.write(f"Graphe sans le sommet: {u}, {new_graph_u.V}, {new_graph_u.E}\n")
-                            new_graph_v = graph.remove_vertex_self(v)
-                            log_file.write(f"Graphe sans le sommet: {v}, {new_graph_v.V}, {new_graph_v.E}\n\n")
-
-                            # Brancher en ajoutant u dans la couverture
-                            stack.append((new_graph_u, current_solution | {u}))
-                            log_file.write(f"La pile update sans le sommet: {u}\n")
-                            log_file.write(f"Graph: {new_graph_u.V}, {new_graph_u.E}\n")
-                            log_file.write(f"Current Solution: {current_solution}\n\n")
-
-                            # Brancher en ajoutant v dans la couverture
-                            stack.append((new_graph_v, current_solution | {v}))
-                            log_file.write(f"La pile update sans le sommet: {v}\n")
-                            log_file.write(f"Graph: {new_graph_v.V}, {new_graph_v.E}\n")
-                            log_file.write(f"Current Solution: {current_solution}\n\n")
-
-        return best_solution
-
-
     def branch_and_bound_simple(self):
         best_solution = None
         stack = []  # Initialisation d'une pile pour le parcours en profondeur
