@@ -58,12 +58,21 @@ print("")
 
 # Test branch and bound sans bornes
 solution = Graph.Graph.branch_simple(graph_from_file)
-print("Solution de branch and bound: ", solution)
+print("Solution du branchement simple: ", solution)
 print("")
 
 solution1 = Graph.Graph.branch_and_bound(graph_from_file)
-print("Solution de branch and bound avec bornes: ", solution1)
+print("Solution de branch and bound: ", solution1)
 print("")
+
+solution2 = Graph.Graph.improved_branch_and_bound(graph_from_file)
+print("Solution de branch and bound ameliore: ", solution2)
+print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+
+solution3 = Graph.Graph.improved_branch_and_bound_degmax(graph_from_file)
+print("Solution de branch and bound ameliore en prenant le degree max de u: ", solution3)
+print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+
 
 # Test algo glouton pas optimal
 #n = Graph.Graph.optimal_couplage_glouton()
