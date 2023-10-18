@@ -381,8 +381,8 @@ class Graph:
                     if u != -1:
                         break
 
-            # Si un sommet u a été trouvé, on effectue les branchements
-            if u != -1:
+            # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
+            if u != -1 and v != -1:
                 # Branchement en ajoutant u dans la couverture
                 new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
                 new_graph = new_graph.remove_vertex(u)  # Suppression de u du graphe
@@ -410,7 +410,7 @@ class Graph:
                 graph = Graph.random_graph(n, p)
 
                 start_time = time.time()
-                cover = graph.branch_and_bound_simple()
+                cover = graph.branch_simple()
                 end_time = time.time()
 
                 execution_time = end_time - start_time
@@ -471,7 +471,7 @@ class Graph:
 
     def branch_and_bound(self):
         """
-        Calcul de branch and bound en prenant en compte les bornes
+        Calcul de branch and bound en prenant en compte les bornes de la partie 4.2
         """
 
         best_solution = None
@@ -510,8 +510,8 @@ class Graph:
                         if u != -1:
                             break
 
-                # Si un sommet u a été trouvé, on effectue les branchements
-                if u != -1:
+                # Si les sommets u,v ont été trouvés, on effectue les branchements
+                if u != -1 and v != -1:
                     # Branchement en ajoutant u dans la couverture
                     new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
                     new_graph = new_graph.remove_vertex(u)  # Suppression de u du graphe
@@ -524,6 +524,132 @@ class Graph:
                     new_graph = new_graph.remove_vertex(v)  # Suppression de v du graphe
                     new_cover = cover.copy()  # Copie de la solution actuelle
                     new_cover.add(v)  # Ajout de v à la couverture
+                    stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
+
+        return best_solution  # Retourne la meilleure solution trouvée
+    
+
+    def improved_branch_and_bound(self):
+        """
+        Calcul de branch and bound ameliore
+        """
+
+        best_solution = None
+        stack = []  # Initialisation d'une pile pour le parcours en profondeur
+        initial_solution = set()  # Initialisation de la solution actuelle (vide)
+        stack.append((self, initial_solution))  # Ajout du graphe initial à la pile avec une solution vide
+
+        while stack:  # Boucle principale de l'algorithme
+            graph, cover = stack.pop()  # Récupération de l'état actuel du graphe et de la solution
+
+            # Calcul de la borne inférieure
+            lower_bound = Graph.calculate_lower_bound(graph)
+
+            # Vérification de la réalisabilité
+            if best_solution is not None and len(cover) < lower_bound:
+                continue  # Élaguer cette branche
+
+            # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
+            if not graph.V or all(len(value) == 0 for value in graph.E.values()):
+                # Si c'est le cas et que la solution actuelle est meilleure que la meilleure solution trouvée
+                if best_solution is None or len(cover) < len(best_solution):
+                    best_solution = cover  # Mettre à jour la meilleure solution
+
+            if best_solution is None or len(cover) < len(best_solution):
+                
+                # Recherche d'un sommet u de l'arête à brancher
+                u = -1
+                v = -1
+
+                for vertex, edges in graph.E.items():
+                    if len(edges) != 0:
+                        u = vertex
+                        for v in edges:
+                            break  # On récupère le premier sommet v avec une arête
+                        if u != -1:
+                            break
+
+                # Si les sommets u,v ont été trouvés, on effectue les branchements
+                if u != -1 and v != -1:
+                    # Branchement en ajoutant u dans la couverture
+                    new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
+                    new_graph = new_graph.remove_vertex(u)  # Suppression de u du graphe
+                    new_cover = cover.copy()  # Copie de la solution actuelle
+                    new_cover.add(u)  # Ajout de u à la couverture
+                    stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
+
+                    # Branchement en ajoutant v dans la couverture
+                    new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
+                    new_cover = cover.copy()  # Copie de la solution actuelle
+                    new_cover.add(v)  # Ajout de v à la couverture
+                    for neighbour in graph.E[u]: # Ajouter à la couverture les voisins de u en les supprimant du graphe
+                        new_cover.add(neighbour)
+                        new_graph = new_graph.remove_vertex(neighbour)
+                    stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
+
+        return best_solution  # Retourne la meilleure solution trouvée
+
+    
+    def improved_branch_and_bound_degmax(self):
+        """
+        Calcul de branch and bound ameliore en prenant le degree max du sommet
+        """
+
+        best_solution = None
+        stack = []  # Initialisation d'une pile pour le parcours en profondeur
+        initial_solution = set()  # Initialisation de la solution actuelle (vide)
+        stack.append((self, initial_solution))  # Ajout du graphe initial à la pile avec une solution vide
+
+        while stack:  # Boucle principale de l'algorithme
+            graph, cover = stack.pop()  # Récupération de l'état actuel du graphe et de la solution
+
+            # Calcul de la borne inférieure
+            lower_bound = Graph.calculate_lower_bound(graph)
+
+            # Vérification de la réalisabilité
+            if best_solution is not None and len(cover) < lower_bound:
+                continue  # Élaguer cette branche
+
+            # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
+            if not graph.V or all(len(value) == 0 for value in graph.E.values()):
+                # Si c'est le cas et que la solution actuelle est meilleure que la meilleure solution trouvée
+                if best_solution is None or len(cover) < len(best_solution):
+                    best_solution = cover  # Mettre à jour la meilleure solution
+
+            if best_solution is None or len(cover) < len(best_solution):
+                
+                # Recherche d'un sommet u de l'arête à brancher
+                u = -1
+                v = -1
+
+                # Prendre le sommet u avec le plus grand degre
+                max_degree = graph.max_degree()
+                if(max_degree):
+                    u = max_degree
+                    for vertex, edges in graph.E.items():
+                        if len(edges) != 0:
+                            u = vertex
+                            for v in edges:
+                                break  # On récupère le premier sommet v avec une arête
+                            if u != -1:
+                                break
+
+                # Si les sommets u,v ont été trouvés, on effectue les branchements
+                if u != -1 and v != -1:
+                    # Branchement en ajoutant u dans la couverture
+                    new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
+                    new_graph = new_graph.remove_vertex(u)  # Suppression de u du graphe
+                    new_cover = cover.copy()  # Copie de la solution actuelle
+                    new_cover.add(u)  # Ajout de u à la couverture
+                    stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
+
+                    # Branchement en ajoutant v dans la couverture
+                    new_graph = copy.deepcopy(graph)  # Création d'une copie du graphe actuel
+                    new_cover = cover.copy()  # Copie de la solution actuelle
+                    new_cover.add(v)  # Ajout de v à la couverture
+                    for neighbour in graph.E[u]: # Ajouter à la couverture les voisins de u en les supprimant du graphe
+                        new_cover.add(neighbour)
+                        new_graph = new_graph.remove_vertex(neighbour)
                     stack.append((new_graph, new_cover))  # Ajout de la nouvelle configuration à la pile
 
         return best_solution  # Retourne la meilleure solution trouvée
