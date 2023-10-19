@@ -4,6 +4,7 @@ import random
 import matplotlib.pyplot as plt
 import time
 import math
+from scipy.stats import linregress
 
 # V = ca doit etre un tableau?
 
@@ -234,24 +235,7 @@ class Graph:
         log_times = np.log(execution_times)
         slope, intercept = np.polyfit(log_sizes, log_times, 1)
         plt.plot(sizes, np.exp(slope * log_sizes + intercept), 'r--', label="Régression linéaire")
-
         print(f"Pente de la régression linéaire (log log): {slope:.2f}")
-
-        plt.legend()
-
-        # Tracer la courbe y et log(x) pour avoir la base de l'exponentiel, mais c'est pas une droite....
-        plt.figure()
-        plt.plot(sizes, execution_times, marker='o', label="log(Temps réel)")
-        plt.xscale('log')
-        plt.xlabel("Taille de l'instance log(nombre de sommets)")
-        plt.ylabel("Temps d'exécution moyen")
-        plt.title(f"Logarithme du nombre de sommets de l'algorithme {algorithm}")
-
-        # Calculer la pente (coefficient directeur) de la régression linéaire en utilisant NumPy
-        slope2, intercept = np.polyfit(sizes, np.log(execution_times), 1)
-        print(f"Pente = Base de la régression linéaire: {slope2:.2f}")
-        #plt.plot(sizes, np.exp(slope * log_sizes + intercept), 'r--', label="Régression linéaire")
-
         plt.legend()
         plt.show()
 
@@ -400,52 +384,23 @@ class Graph:
         return best_solution  # Retourne la meilleure solution trouvée
     
     
-    def measure_execution_time_branch_simple_mean(num_graphs_per_size, Nmax, p):
-        execution_times = []
+    def get_couplage(self) :
+        """ retourne un couplage du graph en entrée"""
+        couplage = set()
+        covered = set()
 
-        for n in range(1, Nmax + 1):
-            total_execution_time = 0
+        for vertex in self.V : 
+            if vertex in covered :
+                continue
 
-            for _ in range(num_graphs_per_size):
-                graph = Graph.random_graph(n, p)
+            for neighbour in self.E[vertex] :
+                if neighbour not in covered :
+                    couplage.add( (vertex,neighbour) )
+                    covered.add(neighbour)
+                    covered.add(vertex)
+                    break
 
-                start_time = time.time()
-                cover = graph.branch_simple()
-                end_time = time.time()
-
-                execution_time = end_time - start_time
-                total_execution_time += execution_time
-
-            average_execution_time = total_execution_time / num_graphs_per_size
-            execution_times.append(average_execution_time)
-
-        # Plotting the execution time
-        plt.plot(range(1, Nmax + 1), execution_times, marker='o')
-        plt.xlabel("Size of the Graph (n)")
-        plt.ylabel("Average Execution Time (seconds)")
-        plt.title("Branch and Bound Execution Time vs. Graph Size")
-        plt.show()
-
-    def measure_execution_time_branch_simple(Nmax, p):
-        execution_times = []
-
-        for n in range(1, Nmax + 1):
-            graph = Graph.random_graph(n, p)
-            start_time = time.time()
-            cover = graph.branch_simple()
-            end_time = time.time()
-            execution_time = end_time - start_time
-            execution_times.append(execution_time)
-
-            if n % 5 == 0:
-                print(f"Processed {n} graphs. Total time: {sum(execution_times):.2f} seconds.")
-
-        # Tracé du temps d'exécution en fonction de la taille du graphe (n)
-        plt.plot(range(1, Nmax + 1), execution_times, marker='o')
-        plt.xlabel("Taille du graphe (n)")
-        plt.ylabel("Temps d'exécution (secondes)")
-        plt.title("Temps d'exécution du Branchement simple en fonction de la taille du graphe")
-        plt.show()
+        return couplage
 
 
     def calculate_lower_bound(self):
@@ -461,7 +416,7 @@ class Graph:
 
         b1 = math.ceil(m / delta) if delta else 0
         
-        M = (self.algo_couplage()) # Couplage du graphe
+        M = self.get_couplage()
         b2 = len(M)
         
         b3 = ( 2*n - 1 - math.sqrt((2*n - 1)**2 - 8*m) ) / 2
@@ -474,7 +429,7 @@ class Graph:
         Calcul de branch and bound en prenant en compte les bornes de la partie 4.2
         """
 
-        best_solution = None
+        best_solution = self.algo_couplage() # On initialise la meilleure solution avec une couverture aleatoire
         stack = []  # Initialisation d'une pile pour le parcours en profondeur
         initial_solution = set()  # Initialisation de la solution actuelle (vide)
         stack.append((self, initial_solution))  # Ajout du graphe initial à la pile avec une solution vide
@@ -482,12 +437,20 @@ class Graph:
         while stack:  # Boucle principale de l'algorithme
             graph, cover = stack.pop()  # Récupération de l'état actuel du graphe et de la solution
 
-            # Calcul de la borne inférieure
+            # Calcul de la borne inférieure (2) dans l'énoncé
             lower_bound = Graph.calculate_lower_bound(graph)
 
+            # Calcul de la borne supérieure (1) dans l'énoncé
+            upper_bound = graph.algo_couplage()
+
             # Vérification de la réalisabilité
-            if best_solution is not None and len(cover) < lower_bound:
-                continue  # Élaguer cette branche
+            if (lower_bound + len(cover) >= len(best_solution)) :
+                continue
+
+            if upper_bound and len(upper_bound) == lower_bound : # Si on a une solution optimale
+                if len(upper_bound | cover) <= len(best_solution): # on vérifie si la solution avec la couverture actuelle fonctionne
+                    best_solution = upper_bound | cover
+                continue # on élague
 
             # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
             if not graph.V or all(len(value) == 0 for value in graph.E.values()):
@@ -496,7 +459,7 @@ class Graph:
                     best_solution = cover  # Mettre à jour la meilleure solution
 
 
-            if best_solution is None or len(cover) < len(best_solution):
+            if len(cover) < len(best_solution):
                 
                 # Recherche d'un sommet u de l'arête à brancher
                 u = -1
@@ -534,7 +497,7 @@ class Graph:
         Calcul de branch and bound ameliore
         """
 
-        best_solution = None
+        best_solution = self.algo_couplage() # On initialise la meilleure solution avec une couverture aleatoire
         stack = []  # Initialisation d'une pile pour le parcours en profondeur
         initial_solution = set()  # Initialisation de la solution actuelle (vide)
         stack.append((self, initial_solution))  # Ajout du graphe initial à la pile avec une solution vide
@@ -542,12 +505,20 @@ class Graph:
         while stack:  # Boucle principale de l'algorithme
             graph, cover = stack.pop()  # Récupération de l'état actuel du graphe et de la solution
 
-            # Calcul de la borne inférieure
+            # Calcul de la borne inférieure (2) dans l'énoncé
             lower_bound = Graph.calculate_lower_bound(graph)
 
+            # Calcul de la borne supérieure (1) dans l'énoncé
+            upper_bound = self.algo_couplage()
+
             # Vérification de la réalisabilité
-            if best_solution is not None and len(cover) < lower_bound:
-                continue  # Élaguer cette branche
+            if (lower_bound + len(cover) >= len(best_solution)) :
+                continue
+
+            if upper_bound and len(upper_bound) == lower_bound : # Si on a une solution optimale
+                if len(upper_bound | cover) <= len(best_solution): # on vérifie si la solution avec la couverture actuelle fonctionne
+                    best_solution = upper_bound | cover
+                continue # on élague
 
             # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
             if not graph.V or all(len(value) == 0 for value in graph.E.values()):
@@ -555,7 +526,7 @@ class Graph:
                 if best_solution is None or len(cover) < len(best_solution):
                     best_solution = cover  # Mettre à jour la meilleure solution
 
-            if best_solution is None or len(cover) < len(best_solution):
+            if len(cover) < len(best_solution):
                 
                 # Recherche d'un sommet u de l'arête à brancher
                 u = -1
@@ -591,11 +562,11 @@ class Graph:
 
     
     def improved_branch_and_bound_degmax(self):
-        """
-        Calcul de branch and bound ameliore en prenant le degree max du sommet
-        """
+    
+        #Calcul de branch and bound ameliore en prenant le degree max du sommet
+    
 
-        best_solution = None
+        best_solution = self.algo_couplage() # On initialise la meilleure solution avec une couverture aleatoire 
         stack = []  # Initialisation d'une pile pour le parcours en profondeur
         initial_solution = set()  # Initialisation de la solution actuelle (vide)
         stack.append((self, initial_solution))  # Ajout du graphe initial à la pile avec une solution vide
@@ -603,12 +574,20 @@ class Graph:
         while stack:  # Boucle principale de l'algorithme
             graph, cover = stack.pop()  # Récupération de l'état actuel du graphe et de la solution
 
-            # Calcul de la borne inférieure
+            # Calcul de la borne inférieure (2) dans l'énoncé
             lower_bound = Graph.calculate_lower_bound(graph)
 
+            # Calcul de la borne supérieure (1) dans l'énoncé
+            upper_bound = self.algo_couplage()
+
             # Vérification de la réalisabilité
-            if best_solution is not None and len(cover) < lower_bound:
-                continue  # Élaguer cette branche
+            if (lower_bound + len(cover) >= len(best_solution)) :
+                continue
+
+            if upper_bound and len(upper_bound) == lower_bound : # Si on a une solution optimale
+                if len(upper_bound | cover) <= len(best_solution): # on vérifie si la solution avec la couverture actuelle fonctionne
+                    best_solution = upper_bound | cover
+                continue # on élague
 
             # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
             if not graph.V or all(len(value) == 0 for value in graph.E.values()):
@@ -616,7 +595,7 @@ class Graph:
                 if best_solution is None or len(cover) < len(best_solution):
                     best_solution = cover  # Mettre à jour la meilleure solution
 
-            if best_solution is None or len(cover) < len(best_solution):
+            if len(cover) < len(best_solution):
                 
                 # Recherche d'un sommet u de l'arête à brancher
                 u = -1
@@ -624,7 +603,8 @@ class Graph:
 
                 # Prendre le sommet u avec le plus grand degre
                 max_degree = graph.max_degree()
-                if(max_degree):
+
+                if(max_degree != None):
                     u = max_degree
                     for vertex, edges in graph.E.items():
                         if len(edges) != 0:
@@ -654,17 +634,95 @@ class Graph:
 
         return best_solution  # Retourne la meilleure solution trouvée
     
+    
+    def measure_execution_time_branch_mean(algorithm, num_graphs_per_size, Nmax, p):
+        execution_times = []
 
-    def measure_execution_time_branch_and_bound(Nmax, p):
+        for n in range(1, Nmax + 1):
+            total_execution_time = 0
+
+            for _ in range(num_graphs_per_size):
+                graph = Graph.random_graph(n, p)
+                print("ok")
+                start_time = time.time()
+
+                if(algorithm == "branch_simple"):
+                    cover = graph.branch_simple()
+                elif(algorithm == "branch_and_bound"):
+                    cover = graph.branch_and_bound()
+                elif(algorithm == "improved_branch_and_bound"):
+                    cover = graph.improved_branch_and_bound()
+                elif(algorithm == "improved_branch_and_bound_degmax"):
+                    cover = graph.improved_branch_and_bound_degmax()
+
+                end_time = time.time()
+
+                execution_time = end_time - start_time
+                total_execution_time += execution_time
+
+            average_execution_time = total_execution_time / num_graphs_per_size
+            execution_times.append(average_execution_time)
+
+        # Tracé du temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), execution_times, marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.title("Temps d'exécution moyen du Branchement en fonction de la taille du graphe")
+        plt.show()
+
+        # Tracé du log de temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), (execution_times), marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Log Temps d'exécution moyen (secondes)")
+        plt.yscale("log")
+        plt.title("Log du Temps d'exécution moyen du Branchement en fonction de la taille du graphe")
+        plt.show()
+
+        # Tracé du log de temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), (execution_times), marker='o')
+        plt.xlabel("Log Taille du graphe (n)")
+        plt.ylabel("Log Temps d'exécution moyen (secondes)")
+        plt.yscale("log")
+        plt.xscale("log")
+        plt.title("Log du Temps d'exécution moyen du Branchement en fonction du log taille du graphe")
+        plt.show()
+
+        # Tracé du log de temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), (execution_times), marker='o')
+        plt.xlabel("Log Taille du graphe (n)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.xscale("log")
+        plt.title("Temps d'exécution moyen du Branchement en fonction du log taille du graphe")
+        plt.show()
+        
+        # Calculer la pente (base de l'exponentielle)
+        #N = np.array(range(1, Nmax + 1))
+        N = [range(1, Nmax + 1)]
+        print("Base exponentielle: ", linregress(N, np.log(execution_times)))
+
+                
+
+    def measure_execution_time_branch(algorithm ,Nmax, p):
         execution_times = []
 
         for n in range(1, Nmax + 1):
             graph = Graph.random_graph(n, p)
             start_time = time.time()
-            cover = graph.branch_and_bound()
+
+            if(algorithm == "branch_simple"):
+                cover = graph.branch_simple()
+            elif(algorithm == "branch_and_bound"):
+                cover = graph.branch_and_bound()
+            elif(algorithm == "improved_branch_and_bound"):
+                cover = graph.improved_branch_and_bound()
+            elif(algorithm == "improved_branch_and_bound_degmax"):
+                cover = graph.improved_branch_and_bound_degmax()
+
             end_time = time.time()
+
             execution_time = end_time - start_time
             execution_times.append(execution_time)
+
             if n % 5 == 0:
                 print(f"Processed {n} graphs. Total time: {sum(execution_times):.2f} seconds.")
 
@@ -672,5 +730,54 @@ class Graph:
         plt.plot(range(1, Nmax + 1), execution_times, marker='o')
         plt.xlabel("Taille du graphe (n)")
         plt.ylabel("Temps d'exécution (secondes)")
-        plt.title("Temps d'exécution du Branch and Bound en fonction de la taille du graphe")
+        plt.title("Temps d'exécution du Branchement simple en fonction de la taille du graphe")
         plt.show()
+
+        # Tracé du temps d'exécution en fonction du log de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), np.log(execution_times), marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.title("Temps d'exécution du Branchement en fonction de la taille du graphe")
+        plt.show()
+
+    def approx_ratio(algorithm, Nmax, p):
+        """
+        Calcule le rapport d'approximation
+        """
+
+        worst_ratio = 0
+
+        for n in range(3, Nmax + 1):
+            graph = Graph.random_graph(n, p)
+    
+            glouton = graph.algo_glouton()
+            cover = graph.algo_couplage()
+            
+            if(algorithm == "branch_simple"):
+                branch = graph.branch_simple()
+            elif(algorithm == "branch_and_bound"):
+                branch = graph.branch_and_bound()
+            elif(algorithm == "improved_branch_and_bound"):
+                branch = graph.improved_branch_and_bound()
+            elif(algorithm == "improved_branch_and_bound_degmax"):
+                branch = graph.improved_branch_and_bound_degmax()
+
+            ratio_glouton = len(glouton) / len(branch)
+            ratio_cover = len(cover) / len(branch)
+
+            print("Pour n =", n)
+            print("Longueur du glouton:", len(glouton))
+            print("Longueur du couplage:", len(cover))
+            print("Longueur du branch:", len(branch))
+            print("Rapport d'approximation Glouton:", ratio_glouton)
+            print("Rapport d'approximation Couplage:", ratio_cover)
+            
+
+            worst_ratio = max(worst_ratio, ratio_glouton, ratio_cover)
+
+        print("Plus mauvais rapport d'approximation:", worst_ratio)
+
+
+
+
+
