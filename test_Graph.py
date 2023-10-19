@@ -52,27 +52,49 @@ print("Graphe depuis fichier: ")
 print("Sommets:", graph_from_file.V)
 print("Aretes:", graph_from_file.E)
 print("")
+
 couverture = graph_from_file.algo_couplage()
-print("La couverture obtenue a partir de graph est: ", couverture)
+print("La couverture obtenue (couplage) a partir du graphe du fichier est: ", couverture)
+print("")
+
+couverture = graph_from_file.algo_glouton()
+print("La couverture obtenue (glouton) a partir de graphe du fichier est: ", couverture)
 print("")
 
 # Test branch and bound sans bornes
 solution = Graph.Graph.branch_simple(graph_from_file)
-print("Solution du branchement simple: ", solution)
-print("")
+print("Solution du branchement simple graphe fichier: ", solution)
+print("") # A CALCULER PENTE ___________________________________________________________________________________________________
 
 solution1 = Graph.Graph.branch_and_bound(graph_from_file)
-print("Solution de branch and bound: ", solution1)
-print("")
+print("Solution de branch and bound graphe fichier: ", solution1)
+print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
 
 solution2 = Graph.Graph.improved_branch_and_bound(graph_from_file)
-print("Solution de branch and bound ameliore: ", solution2)
+print("Solution de branch and bound ameliore graphe fichier: ", solution2)
 print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
 
 solution3 = Graph.Graph.improved_branch_and_bound_degmax(graph_from_file)
-print("Solution de branch and bound ameliore en prenant le degree max de u: ", solution3)
+print("Solution de branch and bound ameliore graphe fichier en prenant le degree max de u: ", solution3)
 print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
 
+"""
+solution4 = Graph.Graph.branch_simple(graph)
+print("Solution du branchement simple graphe 1: ", solution4)
+print("") # A CALCULER PENTE ___________________________________________________________________________________________________
+
+solution5 = Graph.Graph.branch_and_bound(graph)
+print("Solution de branch and bound graphe 1: ", solution5)
+print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+
+solution6 = Graph.Graph.improved_branch_and_bound(graph)
+print("Solution de branch and bound ameliore graphe 1: ", solution6)
+print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+
+solution7 = Graph.Graph.improved_branch_and_bound_degmax(graph)
+print("Solution de branch and bound ameliore graphe 1 en prenant le degree max de u: ", solution7)
+print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+"""
 
 # Test algo glouton pas optimal
 #n = Graph.Graph.optimal_couplage_glouton()
@@ -132,14 +154,32 @@ print("")
 # Graph.Graph.measure_execution_time_proba("couplage", 10, Nmax_proba_couplage, 6500)
 
 # Courbes Courbes temps / nbsommets pour les execution de l'algo branch_and_bound_simple
-Nmax_bab_simple = 20
-# Graph.Graph.measure_execution_time_branch_simple(Nmax_bab_simple, 0.3)
+Nmax_bab_simple = 15
+#Graph.Graph.measure_execution_time_branch_mean("branch_simple", 20, Nmax_bab_simple, 1/np.sqrt(Nmax_bab_simple))
 # Graph.Graph.measure_execution_time_branch_simple(Nmax_bab_simple, 0.7)
 # Graph.Graph.measure_execution_time_branch_simple(Nmax_bab_simple, 1/np.sqrt(Nmax_bab_simple))
 
-Nmax_bab_bounds = 40
-# Graph.Graph.measure_execution_time_branch_and_bound(Nmax_bab_bounds, 0.3)
+Nmax_bab_bounds = 20
+# Graph.Graph.measure_execution_time_branch_mean("branch_and_bound", 10, Nmax_bab_bounds, 0.7)
 # Graph.Graph.measure_execution_time_branch_and_bound(Nmax_bab_bounds, 0.7)
 # Graph.Graph.measure_execution_time_branch_and_bound(Nmax_bab_bounds, 1/np.sqrt(Nmax_bab_bounds))
 
+Nmax_bab_bounds_imp = 40
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 20, Nmax_bab_bounds_imp, 0.7)
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 15, 60, 0.2) #ca donne une droite en log(y) et exp en x => faut augmenter la taille de l'instance
 
+Nmax_bab_bounds_imp_degmax = 60
+Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 15, Nmax_bab_bounds_imp_degmax, 0.2)
+
+# Tests rapport d'approximation:
+# Graph.Graph.approx_ratio("branch_simple", 30, 0.8)
+# Graph.Graph.approx_ratio("branch_and_bound", 25, 0.8)
+# Graph.Graph.approx_ratio("branch_and_bound", 35, 0.3)
+# Graph.Graph.approx_ratio("improved_branch_and_bound", 30, 0.3)
+# Graph.Graph.approx_ratio("improved_branch_and_bound", 30, 0.7)
+# Graph.Graph.approx_ratio("improved_branch_and_bound", 100, 0.3)
+
+# Graph.Graph.approx_ratio("improved_branch_and_bound_degmax", 30, 0.3)
+# Graph.Graph.approx_ratio("improved_branch_and_bound_degmax", 30, 0.7)
+# Graph.Graph.approx_ratio("improved_branch_and_bound_degmax", 80, 0.3)
+# Graph.Graph.approx_ratio("improved_branch_and_bound_degmax", 70, 0.7)
