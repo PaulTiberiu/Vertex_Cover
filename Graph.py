@@ -651,7 +651,7 @@ class Graph:
 
             for _ in range(num_graphs_per_size):
                 graph = Graph.random_graph(n, p)
-                print("ok")
+                
                 start_time = time.time()
 
                 if(algorithm == "branch_simple"):
@@ -706,30 +706,30 @@ class Graph:
         plt.show()
         
         # Calculer la pente (base de l'exponentielle)
-        for i in range(len(execution_times)):
-            if(execution_times[i] == 0):
+        for i in range(len(execution_times)): # Boucle qui permet de trouver l'indice du dernier element a 0
+            if(execution_times[i] == 0): # Car quand l'algo s'execute tres vite, 3e-07 par exemple, on aura un 0 qui s'affiche
                 last0 = i
 
-        last0 = last0 + 1
-        print("last0 ",last0)
+        last0 = last0 + 1 # Vu que la liste commence a 0, ajouter 1
+        #print("last0 ",last0)
     
         exec_times_no0 = []
         for i in range(last0, len(execution_times)):
-            exec_times_no0.append(execution_times[i])
+            exec_times_no0.append(execution_times[i]) # Creer la liste de temps d'execution sans les valeurs a 0
 
-        print("exec_times_no0 ", exec_times_no0)
+        #print("exec_times_no0 ", exec_times_no0)
 
         N = np.array(range(1, Nmax + 1))
-        print("N ",N)
-        exec_times_log = np.log(exec_times_no0)
-        print("exec_times_log ", exec_times_log)
+        #print("N ",N)
+        exec_times_log = np.log(exec_times_no0) # Passer en log
+        #print("exec_times_log ", exec_times_log)
 
         new_N = []
         
-        for i in range(last0, len(execution_times)):
-            new_N.append(N[i])
+        for i in range(last0, len(execution_times)): # Construire la liste de sommets de longueur egale a celle de log temps d'execution
+            new_N.append(N[i]) # Car il faut avoir 2 listes de longueur egale pour calculer la pente
 
-        print("new_N ", new_N)
+        #print("new_N ", new_N)
 
         if N is not None and exec_times_log is not None:
             slope = linregress(new_N, exec_times_log)
