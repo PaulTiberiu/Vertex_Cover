@@ -663,6 +663,8 @@ class Graph:
             average_execution_time = total_execution_time / num_graphs_per_size
             execution_times.append(average_execution_time)
 
+        print(execution_times)
+
         # Tracé du temps d'exécution en fonction de la taille du graphe (n)
         plt.plot(range(1, Nmax + 1), execution_times, marker='o')
         plt.xlabel("Taille du graphe (n)")
@@ -696,10 +698,39 @@ class Graph:
         plt.show()
         
         # Calculer la pente (base de l'exponentielle)
-        #N = np.array(range(1, Nmax + 1))
-        N = [range(1, Nmax + 1)]
-        print("Base exponentielle: ", linregress(N, np.log(execution_times)))
+        for i in range(len(execution_times)):
+            if(execution_times[i] == 0):
+                last0 = i
 
+        last0 = last0 + 1
+        print("last0 ",last0)
+    
+        exec_times_no0 = []
+        for i in range(last0, len(execution_times)):
+            exec_times_no0.append(execution_times[i])
+
+        print("exec_times_no0 ", exec_times_no0)
+
+        N = np.array(range(1, Nmax + 1))
+        print("N ",N)
+        exec_times_log = np.log(exec_times_no0)
+        print("exec_times_log ", exec_times_log)
+
+        new_N = []
+        
+        for i in range(last0, len(execution_times)):
+            new_N.append(N[i])
+
+        print("new_N ", new_N)
+
+        if N is not None and exec_times_log is not None:
+            slope = linregress(new_N, exec_times_log)
+            exp_base = np.exp(slope.slope)
+            print("Slope: ", slope.slope)
+            print("Base exponentielle: ", exp_base)
+        else:
+            print("Pas assez des donnees.")
+        
                 
 
     def measure_execution_time_branch(algorithm ,Nmax, p):
@@ -776,8 +807,3 @@ class Graph:
             worst_ratio = max(worst_ratio, ratio_glouton, ratio_cover)
 
         print("Plus mauvais rapport d'approximation:", worst_ratio)
-
-
-
-
-
