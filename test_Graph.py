@@ -154,8 +154,9 @@ print("")
 # Graph.Graph.measure_execution_time_proba("couplage", 10, Nmax_proba_couplage, 6500)
 
 # Courbes Courbes temps / nbsommets pour les execution de l'algo branch_and_bound_simple
+
 Nmax_bab_simple = 15
-#Graph.Graph.measure_execution_time_branch_mean("branch_simple", 20, Nmax_bab_simple, 1/np.sqrt(Nmax_bab_simple))
+# Graph.Graph.measure_execution_time_branch_mean("branch_simple", 20, Nmax_bab_simple, 1/np.sqrt(Nmax_bab_simple))
 # Graph.Graph.measure_execution_time_branch_simple(Nmax_bab_simple, 0.7)
 # Graph.Graph.measure_execution_time_branch_simple(Nmax_bab_simple, 1/np.sqrt(Nmax_bab_simple))
 
@@ -168,8 +169,8 @@ Nmax_bab_bounds_imp = 40
 # Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 20, Nmax_bab_bounds_imp, 0.7)
 # Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 15, 60, 0.2) #ca donne une droite en log(y) et exp en x => faut augmenter la taille de l'instance
 
-Nmax_bab_bounds_imp_degmax = 60
-Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 15, Nmax_bab_bounds_imp_degmax, 0.2)
+Nmax_bab_bounds_imp_degmax = 50
+Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 15, Nmax_bab_bounds_imp_degmax, 0.3)
 
 # Tests rapport d'approximation:
 # Graph.Graph.approx_ratio("branch_simple", 30, 0.8)
