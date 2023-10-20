@@ -225,6 +225,14 @@ class Graph:
         plt.figure()
         plt.plot(sizes, execution_times, marker='o', label="Temps réel")
         plt.yscale('log')
+        plt.xlabel("Taille de l'instance (nombre de sommets)")
+        plt.ylabel("Temps d'exécution moyen (log secondes)")
+        plt.title(f"Temps d'exécution de l'algorithme {algorithm} (log(y) scale)")
+
+        # Tracer la courbe en échelle log - log
+        plt.figure()
+        plt.plot(sizes, execution_times, marker='o', label="Temps réel")
+        plt.yscale('log')
         plt.xscale('log')
         plt.xlabel("Taille de l'instance (nombre de sommets) en log")
         plt.ylabel("Temps d'exécution moyen (log secondes)")
