@@ -156,21 +156,40 @@ print("")
 # Courbes Courbes temps / nbsommets pour les execution de l'algo branch_and_bound_simple
 
 Nmax_bab_simple = 15
-# Graph.Graph.measure_execution_time_branch_mean("branch_simple", 20, Nmax_bab_simple, 1/np.sqrt(Nmax_bab_simple))
+# Graph.Graph.measure_execution_time_branch_mean("branch_simple", 15, Nmax_bab_simple, 1/np.sqrt(Nmax_bab_simple))
+# Graph.Graph.measure_execution_time_branch_mean("branch_simple", 10, 20, 0.3)
 # Graph.Graph.measure_execution_time_branch_simple(Nmax_bab_simple, 0.7)
 # Graph.Graph.measure_execution_time_branch_simple(Nmax_bab_simple, 1/np.sqrt(Nmax_bab_simple))
 
-Nmax_bab_bounds = 20
+Nmax_bab_bounds = 30
 # Graph.Graph.measure_execution_time_branch_mean("branch_and_bound", 10, Nmax_bab_bounds, 0.7)
+# Graph.Graph.measure_execution_time_branch_mean("branch_and_bound", 15, Nmax_bab_bounds, 0.3) #  Base = 1.5334515018306567 incroyable!
 # Graph.Graph.measure_execution_time_branch_and_bound(Nmax_bab_bounds, 0.7)
 # Graph.Graph.measure_execution_time_branch_and_bound(Nmax_bab_bounds, 1/np.sqrt(Nmax_bab_bounds))
 
-Nmax_bab_bounds_imp = 40
-# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 20, Nmax_bab_bounds_imp, 0.7)
-# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 15, 60, 0.2) #ca donne une droite en log(y) et exp en x => faut augmenter la taille de l'instance
+Nmax_bab_bounds_imp = 50
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 20, Nmax_bab_bounds_imp, 0.3) #meme base que * ,00233
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 15, 60, 0.3) # Base exponentielle:  1.1759390377210153
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 10, 60, 0.8) # base = 1.1342699842767179
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 10, 20, 0.8) # base =  1.323562373040167
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 10, 60, 0.99) # base = 1.1342330395824256
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound", 25, 20, 0.2) # base = 1.3156927034790993
 
-Nmax_bab_bounds_imp_degmax = 50
-Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 15, Nmax_bab_bounds_imp_degmax, 0.3)
+
+Nmax_bab_bounds_imp_degmax = 70
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 30, Nmax_bab_bounds_imp_degmax, 0.3)
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 20, 40, 0.3) #meme base que * ,00237 pas normal
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 15, 60, 0.3) # 1.1804666047038692
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 10, 60, 0.8) # base = 1.1381477226138121
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 10, 20, 0.8) # base = 1.317781589226424
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 10, 60, 0.99) # bae = 1.1408911262291805
+# Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 25, 20, 0.2) # base = 1.330336035981175
+
+Graph.Graph.measure_execution_time_improved_degmax_mean(10, 50, 0.3)
+# Slope improved:  0.17619638480770916
+# Base exponentielle improved:  1.192672258365403
+# Slope degmax:  0.17320577289238326
+# Base exponentielle degmax:  1.1891107666726297
 
 # Tests rapport d'approximation:
 # Graph.Graph.approx_ratio("branch_simple", 30, 0.8)
