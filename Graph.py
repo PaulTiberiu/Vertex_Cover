@@ -815,3 +815,153 @@ class Graph:
             worst_ratio = max(worst_ratio, ratio_glouton, ratio_cover)
 
         print("Plus mauvais rapport d'approximation:", worst_ratio)
+
+    
+
+    def measure_execution_time_improved_degmax_mean(num_graphs_per_size, Nmax, p):
+        execution_times_imp = []
+        execution_times_degmax = []
+
+        for n in range(1, Nmax + 1):
+            total_execution_time_imp = 0
+            total_execution_time_degmax = 0
+
+            for _ in range(num_graphs_per_size):
+                graph = Graph.random_graph(n, p)
+                
+                start_time = time.time()
+                cover_imp = graph.improved_branch_and_bound()
+                end_time = time.time()
+                execution_time_imp = end_time - start_time
+                total_execution_time_imp += execution_time_imp
+
+
+                start_time_degmax = time.time()
+                cover_degmax = graph.improved_branch_and_bound_degmax()
+                end_time_degmax = time.time()
+                execution_time_degmax = end_time_degmax - start_time_degmax
+                total_execution_time_degmax += execution_time_degmax
+
+            average_execution_time_imp = total_execution_time_imp / num_graphs_per_size
+            execution_times_imp.append(average_execution_time_imp)
+
+            average_execution_time_degmax = total_execution_time_degmax / num_graphs_per_size
+            execution_times_degmax.append(average_execution_time_degmax)
+
+        print(execution_times_imp)
+        print(execution_times_degmax)
+
+        # Tracé du temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), execution_times_imp, marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.title("Temps d'exécution moyen du Branchement en fonction de la taille du graphe")
+        plt.show()
+
+        # Tracé du log de temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), (execution_times_imp), marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Log Temps d'exécution moyen (secondes)")
+        plt.yscale("log")
+        plt.title("Log du Temps d'exécution moyen du Branchement en fonction de la taille du graphe")
+        plt.show()
+
+        # Tracé du log de temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), (execution_times_imp), marker='o')
+        plt.xlabel("Log Taille du graphe (n)")
+        plt.ylabel("Log Temps d'exécution moyen (secondes)")
+        plt.yscale("log")
+        plt.xscale("log")
+        plt.title("Log du Temps d'exécution moyen du Branchement en fonction du log taille du graphe")
+        plt.show()
+
+        # Tracé du temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), execution_times_degmax, marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Temps d'exécution moyen (secondes)")
+        plt.title("Temps d'exécution moyen du Branchement en fonction de la taille du graphe")
+        plt.show()
+
+        # Tracé du log de temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), (execution_times_degmax), marker='o')
+        plt.xlabel("Taille du graphe (n)")
+        plt.ylabel("Log Temps d'exécution moyen (secondes)")
+        plt.yscale("log")
+        plt.title("Log du Temps d'exécution moyen du Branchement en fonction de la taille du graphe")
+        plt.show()
+
+        # Tracé du log de temps d'exécution en fonction de la taille du graphe (n)
+        plt.plot(range(1, Nmax + 1), (execution_times_degmax), marker='o')
+        plt.xlabel("Log Taille du graphe (n)")
+        plt.ylabel("Log Temps d'exécution moyen (secondes)")
+        plt.yscale("log")
+        plt.xscale("log")
+        plt.title("Log du Temps d'exécution moyen du Branchement en fonction du log taille du graphe")
+        plt.show()
+
+        # Calculer la pente (base de l'exponentielle)
+        for i in range(len(execution_times_imp)): # Boucle qui permet de trouver l'indice du dernier element a 0
+            if(execution_times_imp[i] == 0): # Car quand l'algo s'execute tres vite, 3e-07 par exemple, on aura un 0 qui s'affiche
+                last0 = i
+
+        last0 = last0 + 1 # Vu que la liste commence a 0, ajouter 1
+        #print("last0 ",last0)
+    
+        exec_times_no0 = []
+        for i in range(last0, len(execution_times_imp)):
+            exec_times_no0.append(execution_times_imp[i]) # Creer la liste de temps d'execution sans les valeurs a 0
+
+        #print("exec_times_no0 ", exec_times_no0)
+
+        N = np.array(range(1, Nmax + 1))
+        #print("N ",N)
+        exec_times_log = np.log(exec_times_no0) # Passer en log
+        #print("exec_times_log ", exec_times_log)
+
+        new_N = []
+        
+        for i in range(last0, len(execution_times_imp)): # Construire la liste de sommets de longueur egale a celle de log temps d'execution
+            new_N.append(N[i]) # Car il faut avoir 2 listes de longueur egale pour calculer la pente
+
+        #print("new_N ", new_N)
+
+        if N is not None and exec_times_log is not None:
+            slope = linregress(new_N, exec_times_log)
+            exp_base = np.exp(slope.slope)
+            print("Slope: ", slope.slope)
+            print("Base exponentielle: ", exp_base)
+        else:
+            print("Pas assez des donnees.")
+        
+        # Calculer la pente (base de l'exponentielle)
+        for i in range(len(execution_times_degmax)): # Boucle qui permet de trouver l'indice du dernier element a 0
+            if(execution_times_imp[i] == 0): # Car quand l'algo s'execute tres vite, 3e-07 par exemple, on aura un 0 qui s'affiche
+                last0_degmax = i
+
+        last0_degmax = last0_degmax + 1 # Vu que la liste commence a 0, ajouter 1
+        #print("last0 ",last0)
+    
+        exec_times_no0_degmax = []
+        for i in range(last0_degmax, len(execution_times_degmax)):
+            exec_times_no0_degmax.append(execution_times_degmax[i]) # Creer la liste de temps d'execution sans les valeurs a 0
+
+        #print("exec_times_no0 ", exec_times_no0)
+
+        N_degmax = np.array(range(1, Nmax + 1))
+        #print("N ",N)
+        exec_times_log_degmax = np.log(exec_times_no0_degmax) # Passer en log
+        #print("exec_times_log ", exec_times_log)
+
+        new_N_degmax = []
+        
+        for i in range(last0_degmax, len(execution_times_degmax)): # Construire la liste de sommets de longueur egale a celle de log temps d'execution
+            new_N_degmax.append(N_degmax[i]) # Car il faut avoir 2 listes de longueur egale pour calculer la pente
+
+
+        if N_degmax is not None and exec_times_log_degmax is not None:
+            slope_degmax = linregress(new_N_degmax, exec_times_log_degmax)
+            exp_base_degmax = np.exp(slope_degmax.slope)
+            print("Slope degmax: ", slope_degmax.slope)
+            print("Base exponentielle degmax: ", exp_base_degmax)
+        else:
+            print("Pas assez des donnees.")
