@@ -1,3 +1,6 @@
+# Virginie CHEN        Paul-Tiberiu IORDACHE
+#    28709592                  28706827
+
 import Graph
 import numpy as np
 import time
@@ -64,36 +67,36 @@ print("")
 # Test branch and bound sans bornes
 solution = Graph.Graph.branch_simple(graph_from_file)
 print("Solution du branchement simple graphe fichier: ", solution)
-print("") # A CALCULER PENTE ___________________________________________________________________________________________________
+print("") 
 
 solution1 = Graph.Graph.branch_and_bound(graph_from_file)
 print("Solution de branch and bound graphe fichier: ", solution1)
-print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+print("") 
 
 solution2 = Graph.Graph.improved_branch_and_bound(graph_from_file)
 print("Solution de branch and bound ameliore graphe fichier: ", solution2)
-print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+print("")
 
 solution3 = Graph.Graph.improved_branch_and_bound_degmax(graph_from_file)
 print("Solution de branch and bound ameliore graphe fichier en prenant le degree max de u: ", solution3)
-print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+print("")
 
 """
 solution4 = Graph.Graph.branch_simple(graph)
 print("Solution du branchement simple graphe 1: ", solution4)
-print("") # A CALCULER PENTE ___________________________________________________________________________________________________
+print("") 
 
 solution5 = Graph.Graph.branch_and_bound(graph)
 print("Solution de branch and bound graphe 1: ", solution5)
-print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+print("")
 
 solution6 = Graph.Graph.improved_branch_and_bound(graph)
 print("Solution de branch and bound ameliore graphe 1: ", solution6)
-print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+print("") 
 
 solution7 = Graph.Graph.improved_branch_and_bound_degmax(graph)
 print("Solution de branch and bound ameliore graphe 1 en prenant le degree max de u: ", solution7)
-print("") # A FAIRE LES TESTS __________________________________________________________________________________________________
+print("") 
 """
 
 # Test algo glouton pas optimal
@@ -186,10 +189,10 @@ Nmax_bab_bounds_imp_degmax = 70
 # Graph.Graph.measure_execution_time_branch_mean("improved_branch_and_bound_degmax", 25, 20, 0.2) # base = 1.330336035981175
 
 Graph.Graph.measure_execution_time_improved_degmax_mean(10, 50, 0.3)
-# Slope improved:  0.17619638480770916
-# Base exponentielle improved:  1.192672258365403
-# Slope degmax:  0.17320577289238326
-# Base exponentielle degmax:  1.1891107666726297
+#Slope:  0.1760161413854641
+#Base exponentielle:  1.1924573064083586
+#Slope degmax:  0.15078952188568426
+#Base exponentielle degmax:  1.1627518984974432
 
 # Tests rapport d'approximation:
 # Graph.Graph.approx_ratio("branch_simple", 30, 0.8)
