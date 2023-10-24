@@ -1,3 +1,6 @@
+# Virginie CHEN        Paul-Tiberiu IORDACHE
+#    28709592                  28706827
+
 import copy
 import numpy as np
 import random
@@ -5,8 +8,6 @@ import matplotlib.pyplot as plt
 import time
 import math
 from scipy.stats import linregress
-
-# V = ca doit etre un tableau?
 
 class Graph:
     V = set # Ensemble de sommets (la liste de sommets) 
@@ -614,13 +615,10 @@ class Graph:
 
                 if(max_degree != None):
                     u = max_degree
-                    for vertex, edges in graph.E.items():
-                        if len(edges) != 0:
-                            u = vertex
-                            for v in edges:
-                                break  # On récupère le premier sommet v avec une arête
-                            if u != -1:
-                                break
+                    if len(graph.E[u]) != 0:
+                        for v in graph.E[u]:
+                            break  # On récupère le premier sommet v avec une arête
+                        
 
                 # Si les sommets u,v ont été trouvés, on effectue les branchements
                 if u != -1 and v != -1:
@@ -945,12 +943,12 @@ class Graph:
         for i in range(last0_degmax, len(execution_times_degmax)):
             exec_times_no0_degmax.append(execution_times_degmax[i]) # Creer la liste de temps d'execution sans les valeurs a 0
 
-        #print("exec_times_no0 ", exec_times_no0)
+        print("exec_times_no0 ", exec_times_no0)
 
         N_degmax = np.array(range(1, Nmax + 1))
-        #print("N ",N)
+        print("N ",N)
         exec_times_log_degmax = np.log(exec_times_no0_degmax) # Passer en log
-        #print("exec_times_log ", exec_times_log)
+        print("exec_times_log ", exec_times_log)
 
         new_N_degmax = []
         
