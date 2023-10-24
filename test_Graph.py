@@ -1,5 +1,4 @@
 # Virginie CHEN        Paul-Tiberiu IORDACHE
-#    28709592                  28706827
 
 import Graph
 import numpy as np
