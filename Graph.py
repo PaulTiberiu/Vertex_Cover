@@ -33,7 +33,6 @@ class Graph:
         self.E[v1].add(v2)          # On ajoute v1 a v2 et
         self.E[v2].add(v1)          # v2 a v1 car le graphe est non oriente
 
-#Question 2.1.1
 
     def remove_vertex(self, v):     
         """
@@ -53,8 +52,6 @@ class Graph:
         
         return G_cpy
 
-
-#Question 2.1.2
     
     def remove_many_vertex(self, set_delete) :
         """
@@ -76,7 +73,6 @@ class Graph:
             
         return G_cpy
 
-    #Question 2.1.3
 
     """
     def ens_to_tab(Ens):
