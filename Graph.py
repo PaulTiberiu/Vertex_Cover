@@ -449,12 +449,12 @@ class Graph:
 
             # Vérification de la réalisabilité
             if (lower_bound + len(cover) >= len(best_solution)) :
-                continue
+                continue # On élague
 
             if upper_bound and len(upper_bound) == lower_bound : # Si on a une solution optimale
                 if len(upper_bound | cover) <= len(best_solution): # on vérifie si la solution avec la couverture actuelle fonctionne
                     best_solution = upper_bound | cover
-                continue # on élague
+                continue # On élague
 
             # Vérification si tous les sommets sont couverts ou s'il n'y a plus d'arêtes dans le graphe
             if not graph.V or all(len(value) == 0 for value in graph.E.values()):
