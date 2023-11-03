@@ -448,7 +448,7 @@ class Graph:
             upper_bound = graph.algo_couplage()
 
             # Vérification de la réalisabilité
-            if (lower_bound + len(cover) >= len(best_solution)) :
+            if (lower_bound + len(cover) >= len(best_solution)) : #if (lower_bound + len(cover) >= len(best_solution)) or (lower_bound + len(cover) > len(upper_bound) + len(cover))
                 continue # On élague
 
             if upper_bound and len(upper_bound) == lower_bound : # Si on a une solution optimale
@@ -516,7 +516,7 @@ class Graph:
             upper_bound = self.algo_couplage()
 
             # Vérification de la réalisabilité
-            if (lower_bound + len(cover) >= len(best_solution)) :
+            if (lower_bound + len(cover) >= len(best_solution)) : #if (lower_bound + len(cover) >= len(best_solution)) or (lower_bound + len(cover) > len(upper_bound) + len(cover))
                 continue
 
             if upper_bound and len(upper_bound) == lower_bound : # Si on a une solution optimale
@@ -585,7 +585,7 @@ class Graph:
             upper_bound = self.algo_couplage()
 
             # Vérification de la réalisabilité
-            if (lower_bound + len(cover) >= len(best_solution)) :
+            if (lower_bound + len(cover) >= len(best_solution)) : #if (lower_bound + len(cover) >= len(best_solution)) or (lower_bound + len(cover) > len(upper_bound) + len(cover))
                 continue
 
             if upper_bound and len(upper_bound) == lower_bound : # Si on a une solution optimale
